@@ -12,14 +12,12 @@ class SumOfIntersection {
         Set<Integer> firstSet = Sets.newHashSet();
         Set<Integer> secondSet = Sets.newHashSet();
         Random random = new Random();
-
         for (int i = 0; i < 1000; i++) {
             firstSet.add(random.nextInt(50000));
         }
         for (int i = 0; i < 1000; i++) {
             secondSet.add(random.nextInt(50000));
         }
-
         intersectedSet = Sets.intersection(firstSet, secondSet);
     }
 
