@@ -4,7 +4,7 @@ import com.carrotsearch.sizeof.RamUsageEstimator;
 
 /**Данный класс содержит метод, который выводит на экран
  * размер переданного ему объекта. Для этого используется
- * зависимоть на артифакт java-sizeof от com.carrotsearch
+ * зависимоть на артифак java-sizeof com.carrotsearch
  */
 
 public class ObjectSizePrinter {
