@@ -140,7 +140,11 @@ public class MyArrayList<E> implements List<E> {
     public boolean removeAll(Collection<?> c) {
         for (Object o :
                 c) {
-            remove(o);
+            for (int i = 0; i < elements.length; ) {
+                if (o.equals(elements[i])) {
+                    remove(i);
+                } else i++;
+            }
         }
         return true;
     }
@@ -150,8 +154,19 @@ public class MyArrayList<E> implements List<E> {
         Objects.requireNonNull(c);
         Object[] retain = new Object[c.size()];
         int retained = 0;
-
-        return false;
+        for (Object o :
+                c) {
+            if (contains(o)) {
+                retain[retained] = o;
+                retained++;
+            }
+        }
+        clear();
+        if (retained > 0) {
+            elements = new Object[retained];
+            System.arraycopy(retain, 0, elements, 0, retained);
+        }
+        return true;
     }
 
     @Override
@@ -213,12 +228,13 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public ListIterator<E> listIterator() {
-        return null;
+        return new MyIterator<>(this);
     }
 
     @Override
     public ListIterator<E> listIterator(int index) {
-        return null;
+        checkIndex(index);
+        return new MyIterator<>(this, index);
     }
 
     private void checkIndex(int index) {
