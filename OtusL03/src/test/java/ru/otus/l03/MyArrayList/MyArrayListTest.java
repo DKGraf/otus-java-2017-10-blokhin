@@ -143,44 +143,4 @@ class MyArrayListTest {
         int i = list.size();
         Assertions.assertEquals(7, i);
     }
-
-    @Test
-    void addAll1() {
-    }
-
-    @Test
-    void addAll2() {
-    }
-
-    @Test
-    void containsAll() {
-    }
-
-    @Test
-    void retainAll() {
-    }
-
-    @Test
-    void subList() {
-    }
-
-    @Test
-    void toArray() {
-    }
-
-    @Test
-    void toArray1() {
-    }
-
-    @Test
-    void iterator() {
-    }
-
-    @Test
-    void listIterator() {
-    }
-
-    @Test
-    void listIterator1() {
-    }
 }
