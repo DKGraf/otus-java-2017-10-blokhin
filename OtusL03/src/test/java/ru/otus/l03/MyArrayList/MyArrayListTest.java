@@ -4,7 +4,26 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class MyArrayListTest {
-    @org.junit.jupiter.api.Test
+    @Test
+    void add1() {
+        MyArrayList<Integer> list = new MyArrayList<>();
+        list.add(1);
+        int i = list.get(0);
+        Assertions.assertEquals(1, i);
+    }
+
+    @Test
+    void add2() {
+        MyArrayList<Integer> list = new MyArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add(i);
+        }
+        list.add(5, 15);
+        int i = list.get(5);
+        Assertions.assertEquals(15, i);
+    }
+
+    @Test
     void size() {
         MyArrayList<Integer> list = new MyArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -13,7 +32,7 @@ class MyArrayListTest {
         Assertions.assertEquals(10, list.size());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void isEmpty() {
         MyArrayList<Integer> list = new MyArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -67,28 +86,62 @@ class MyArrayListTest {
     }
 
     @Test
-    void toArray() {
+    void remove1() {
         MyArrayList<Integer> list = new MyArrayList<>();
         for (int i = 0; i < 10; i++) {
             list.add(i);
         }
-
+        list.remove(Integer.valueOf(5));
+        int size = list.size();
+        Assertions.assertEquals(9, size);
     }
 
     @Test
-    void toArray1() {
+    void remove2() {
+        MyArrayList<Integer> list = new MyArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add(i);
+        }
+        list.remove(9);
+        int size = list.size();
+        Assertions.assertEquals(9, size);
     }
 
     @Test
-    void add1() {
+    void indexOf() {
+        MyArrayList<Integer> list = new MyArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add(i);
+        }
+        int i = list.indexOf(5);
+        Assertions.assertEquals(5, i);
     }
 
     @Test
-    void add2() {
+    void lastIndexOf() {
+        MyArrayList<Integer> list = new MyArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            list.add(3);
+        }
+        list.add(8);
+        list.add(9);
+        int i = list.lastIndexOf(3);
+        Assertions.assertEquals(4, i);
     }
 
     @Test
-    void addAll() {
+    void removeAll() {
+        MyArrayList<Integer> list = new MyArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add(i);
+        }
+        MyArrayList<Integer> list2 = new MyArrayList<>();
+        list2.add(3);
+        list2.add(7);
+        list2.add(8);
+        list.removeAll(list2);
+        int i = list.size();
+        Assertions.assertEquals(7, i);
     }
 
     @Test
@@ -96,11 +149,7 @@ class MyArrayListTest {
     }
 
     @Test
-    void remove() {
-    }
-
-    @Test
-    void remove1() {
+    void addAll2() {
     }
 
     @Test
@@ -108,23 +157,19 @@ class MyArrayListTest {
     }
 
     @Test
-    void removeAll() {
-    }
-
-    @Test
     void retainAll() {
     }
 
     @Test
-    void indexOf() {
-    }
-
-    @Test
-    void lastIndexOf() {
-    }
-
-    @Test
     void subList() {
+    }
+
+    @Test
+    void toArray() {
+    }
+
+    @Test
+    void toArray1() {
     }
 
     @Test
@@ -138,11 +183,4 @@ class MyArrayListTest {
     @Test
     void listIterator1() {
     }
-
-    @org.junit.jupiter.api.Test
-    void add() {
-
-    }
-
-
 }

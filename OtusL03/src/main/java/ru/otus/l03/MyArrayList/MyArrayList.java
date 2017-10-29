@@ -67,7 +67,7 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public void add(int index, E element) {
         int numToMove = size - index;
-        if (index + 1 > elements.length) expand();
+        if (size + 1 > elements.length) expand();
         System.arraycopy(elements, index, elements, index + 1, numToMove);
         elements[index] = element;
         size++;
@@ -79,6 +79,7 @@ public class MyArrayList<E> implements List<E> {
         System.arraycopy(elements, 0, newArray, 0, size);
         System.arraycopy(c.toArray(), 0, newArray, size, c.size());
         elements = newArray;
+        size = elements.length;
         return true;
     }
 
@@ -254,7 +255,7 @@ public class MyArrayList<E> implements List<E> {
 
     private void removeByIndex(int index) {
         int forMoving = size - index - 1;
-        if (forMoving > 0) {
+        if (forMoving >= 0) {
             System.arraycopy(elements, index + 1, elements, index, forMoving);
             elements[--size] = null;
         }

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class MyIterator<E> implements Iterator<E>, ListIterator<E> {
-    private int current = 0;
+    private int current = -1;
     private List<E> list;
 
     MyIterator(List<E> list) {
