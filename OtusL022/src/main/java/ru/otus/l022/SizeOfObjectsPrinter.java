@@ -4,25 +4,25 @@ package ru.otus.l022;
 import java.util.function.Supplier;
 
 public class SizeOfObjectsPrinter {
-    private static final int COUNT = 10_000_000;
-    Object o;
-    final private Supplier<?> item;
+    private static final int COUNT = 1_000_000;
 
-    public SizeOfObjectsPrinter(Supplier<?> item) {
-        this.item = item;
-    }
-
-    public void run() {
+    public static <T> Object sizePrinter(Supplier<T> supplier) {
         Runtime runtime = Runtime.getRuntime();
-        long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
         Object[] array = new Object[COUNT];
+        runtime.gc();
+
+        long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
         for (int i = 0; i < COUNT; i++) {
-            array[i] = item.get();
+            array[i] = supplier.get();
         }
+
         runtime.gc();
         long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
-        System.out.println("Размер объекта примерно равен: " +
+
+        System.out.println("Размер объекта равен: " +
                 (memoryAfter - memoryBefore) / COUNT +
                 " байт");
+
+        return array;
     }
 }

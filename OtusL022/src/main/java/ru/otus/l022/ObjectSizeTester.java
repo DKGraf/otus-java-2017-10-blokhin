@@ -1,7 +1,12 @@
 package ru.otus.l022;
 
+/**
+ * -XX:-UseCompressedOops
+ */
+
 public class ObjectSizeTester {
     public static void main(String[] args) {
-        new SizeOfObjectsPrinter(() -> new String(new char[0])).run();
+        SizeOfObjectsPrinter.sizePrinter(String::new);
+        SizeOfObjectsPrinter.sizePrinter(Object::new);
     }
 }
