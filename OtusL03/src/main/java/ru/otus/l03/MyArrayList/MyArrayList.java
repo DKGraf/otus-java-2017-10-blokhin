@@ -75,10 +75,8 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        Object[] newArray = new Object[size + c.size()];
-        System.arraycopy(elements, 0, newArray, 0, size);
-        System.arraycopy(c.toArray(), 0, newArray, size, c.size());
-        elements = newArray;
+        elements = Arrays.copyOf(elements, size + c.size());
+        System.arraycopy(c.toArray(), 0, elements, size, c.size());
         size = elements.length;
         return true;
     }
@@ -248,9 +246,7 @@ public class MyArrayList<E> implements List<E> {
             throw new ArrayIndexOutOfBoundsException("Превышен допустимый размер списка.");
         int newSize = (oldSize * 3) / 2 + 1;
         if (newSize < 0) newSize = Integer.MAX_VALUE;
-        Object[] temp = Arrays.copyOf(elements, oldSize);
-        elements = new Object[newSize];
-        System.arraycopy(temp, 0, elements, 0, oldSize);
+        elements = Arrays.copyOf(elements, newSize);
     }
 
     private void removeByIndex(int index) {
