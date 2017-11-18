@@ -19,10 +19,10 @@ public class InvalidTest {
     }
 
     @Test
-    void test() {
-        assert list.size() == 5;
-        assert list.get(1) == 2;
-        assert list.get(0) == 0;
+    void test() throws Exception {
+        if (list.size() != 5) {
+            throw new Exception();
+        }
     }
 
 

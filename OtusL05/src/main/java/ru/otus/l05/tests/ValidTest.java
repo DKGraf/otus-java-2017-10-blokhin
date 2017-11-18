@@ -19,8 +19,12 @@ public class ValidTest {
     }
 
     @Test
-    void test() {
-        assert list.size() == 4;
-        assert list.get(1) == 1;
+    void test() throws Exception {
+        if (list.size() != 4) {
+            throw new Exception();
+        }
+        if (list.get(1) != 1) {
+            throw new Exception();
+        }
     }
 }
