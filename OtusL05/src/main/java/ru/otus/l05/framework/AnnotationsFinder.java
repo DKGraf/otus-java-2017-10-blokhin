@@ -10,12 +10,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-public class AnnotationsFinder {
+/**
+ * Данный класс содержит статические методы для поиска следующих аннотаций:
+ * Test, Before, After.
+ * Конструктор класса выполнен приватным, чтобы препятствовать инстанцированию
+ * данного класса.
+ */
+
+class AnnotationsFinder {
 
     private AnnotationsFinder() {
     }
 
-    public static Set<Method> findMethodsForTest(String packageName) {
+    static Set<Method> findMethodsForTest(String packageName) {
         Reflections reflections = new Reflections(packageName, new MethodAnnotationsScanner());
         return reflections.getMethodsAnnotatedWith(Test.class);
     }
@@ -30,11 +37,11 @@ public class AnnotationsFinder {
         return null;
     }
 
-    public static Method findMethodWithBefore(Class<?> clazz) {
+    static Method findMethodWithBefore(Class<?> clazz) {
         return findMethodsWithAnnotations(clazz, Before.class);
     }
 
-    public static Method findMethodWithAfter(Class<?> clazz) {
+    static Method findMethodWithAfter(Class<?> clazz) {
         return findMethodsWithAnnotations(clazz, After.class);
     }
 }

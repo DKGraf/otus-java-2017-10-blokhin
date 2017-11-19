@@ -4,23 +4,35 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-public class Tester {
-    private String packageName;
+/**
+ * Тестовый пакет.
+ * Если в конструктор передать имя пакета, то будет произведен поиск
+ * методов для теста по всем классам, входящим в данный пакет.
+ * Если в конструктор передать имя класса, то будет выполнен поиск
+ * методов для тестирования только в этом классе.
+ */
 
-    public Tester(String packageName) {
-        this.packageName = packageName;
+public class Tester {
+    private String name;
+
+    public Tester(String name) {
+        this.name = name;
     }
 
     public void run() {
-        Set<Method> setOfMethodsForTest = AnnotationsFinder.findMethodsForTest(packageName);
+        Set<Method> setOfMethodsForTest = AnnotationsFinder.findMethodsForTest(name);
         int numOfTests = 0;
         int numOfSuccess = 0;
 
         for (Method method :
                 setOfMethodsForTest) {
             numOfTests++;
+            System.out.println("Running test " + numOfTests + " of " + setOfMethodsForTest.size());
             if (test(method)) {
                 numOfSuccess++;
+                System.out.println("Test " + numOfTests + " passed.\n");
+            } else {
+                System.out.println("Test " + numOfTests + " failed.\n");
             }
         }
 
