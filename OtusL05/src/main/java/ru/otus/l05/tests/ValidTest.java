@@ -19,7 +19,7 @@ public class ValidTest {
     }
 
     @Test
-    void test() throws Exception {
+    void validTest() throws Exception {
         if (list.size() != 4) {
             throw new Exception();
         }

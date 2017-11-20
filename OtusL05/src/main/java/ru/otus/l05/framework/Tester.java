@@ -28,6 +28,8 @@ public class Tester {
                 setOfMethodsForTest) {
             numOfTests++;
             System.out.println("Running test " + numOfTests + " of " + setOfMethodsForTest.size());
+            System.out.println("Current class for test: " + method.getDeclaringClass().getName());
+            System.out.println("Current method for test: " + method.getName());
             if (test(method)) {
                 numOfSuccess++;
                 System.out.println("Test " + numOfTests + " passed.\n");
