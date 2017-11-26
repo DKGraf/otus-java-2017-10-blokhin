@@ -24,9 +24,10 @@ public class Atm {
         if (!checkSum(sum)) {
             System.out.println("Невозможно выдать запрошенную сумму.");
         } else {
-            int[] packOfCash = calculate(sum);
+            int[] packOfCash = calcCountOfBanknotes(sum);
             decreaseAtmBalance(packOfCash);
             decreaseOwnerBalance(sum);
+            showInfo(packOfCash);
         }
     }
 
@@ -60,7 +61,7 @@ public class Atm {
                 (count_5000 * 5000);
     }
 
-    private int[] calculate(int sum) {
+    private int[] calcCountOfBanknotes(int sum) {
         int countOf5000 = sum / 5000;
         sum -= countOf5000 * 5000;
         int countOf1000 = sum / 1000;
@@ -70,8 +71,22 @@ public class Atm {
         int countOf100 = sum / 100;
         sum -= countOf100 * 100;
         int countOf50 = sum / 50;
-        sum -= countOf50 * 50;
         return new int[]{countOf50, countOf100, countOf500, countOf1000, countOf5000};
+    }
+
+    private void showInfo(int[] packOfCash) {
+        String info = "Выдано:\n" +
+                "\tбанкнот номиналом 50 - " +
+                packOfCash[0] +
+                "\n\tбанкнот номиналом 100 - " +
+                packOfCash[1] +
+                "\n\tбанкнот номиналом 500 - " +
+                packOfCash[2] +
+                "\n\tбанкнот номиналом 1000 - " +
+                packOfCash[3] +
+                "\n\tбанкнот номиналом 5000 - " +
+                packOfCash[4];
+        System.out.println(info);
     }
 
     private void decreaseAtmBalance(int[] packOfCash) {
@@ -106,11 +121,13 @@ public class Atm {
                 (packOfCash[4] * 5000);
     }
 
-    public void showAtmBalance() {
+    public int getAtmBalance() {
         System.out.println("Остаток денежных средств в банкомате: " + totalCash());
+        return totalCash();
     }
 
-    public void showOwnerBalance() {
+    public int getOwnerBalance() {
         System.out.println("Остаток денежных средств на вашем счете: " + owner.getBalance());
+        return owner.getBalance();
     }
 }
