@@ -1,51 +1,61 @@
 package ru.otus.l06.atm;
 
+import java.util.*;
+
 /**
- * Для простоты количество банкнот каждого типа захардкожено.
- * Будем считать, что в банкомат загружено по 100 купюр каждого
- * из 5 номиналов. При приеме денег предполагается, что купюры
+ * При приеме денег предполагается, что купюры
  * попадают в ячейки соответствующих номиналов и становятся
  * доступны для выдачи.
  */
 
 public class Atm {
-    private int count_50 = 100;
-    private int count_100 = 100;
-    private int count_500 = 100;
-    private int count_1000 = 100;
-    private int count_5000 = 100;
-    private AccountOwner owner;
+    private Map<Integer, Integer> banknotes;
+    private ArrayList<Integer> banknotesNominal;
+    private List<AccountOwner> owners;
 
-    public Atm() {
-        owner = new AccountOwner();
+    //В конструктор передается список купюр, количество
+    //купюр(одинаковое для каждого номинала) и список владельцев счетов
+    public Atm(ArrayList<Integer> banknotesNominal, int banknotesCount, List<AccountOwner> owners) {
+        banknotes = new TreeMap<>();
+        for (Integer nominal :
+                banknotesNominal) {
+            banknotes.put(nominal, banknotesCount);
+        }
+        Collections.sort(banknotesNominal);
+        Collections.reverse(banknotesNominal);
+        this.banknotesNominal = banknotesNominal;
+        this.owners = owners;
     }
 
-    public void giveCash(int sum) {
-        if (!checkSum(sum)) {
+    public void giveCash(int sum, int ownerId) {
+        if (!checkSum(sum, ownerId)) {
             System.out.println("Невозможно выдать запрошенную сумму.");
         } else {
-            int[] packOfCash = calcCountOfBanknotes(sum);
+            Map<Integer, Integer> packOfCash = calcCountOfBanknotes(sum);
             decreaseAtmBalance(packOfCash);
-            decreaseOwnerBalance(sum);
+            decreaseOwnerBalance(sum, ownerId);
+            System.out.println("\nВыдано:");
             showInfo(packOfCash);
         }
     }
 
-    public void acceptCash(int countOf50, int countOf100, int countOf500, int countOf1000, int countOf5000) {
-        int[] packOfCash = new int[]{countOf50, countOf100, countOf500, countOf1000, countOf5000};
+    public void acceptCash(Map<Integer, Integer> packOfCash, int ownerId) {
         increaseAtmBalance(packOfCash);
         int sum = calcSumOfCash(packOfCash);
-        increaseOwnerBalance(sum);
+        increaseOwnerBalance(sum, ownerId);
+        System.out.println("\nПринято:");
+        showInfo(packOfCash);
     }
 
-    private boolean checkSum(int sum) {
-        if (sum % 50 != 0) {
+    private boolean checkSum(int sum, int ownerId) {
+        int minNominal = banknotesNominal.get(banknotesNominal.size() - 1);
+        if (sum % (minNominal) != 0) {
             System.out.println("Сумма должна быть кратна 50.");
             return false;
         } else if (totalCash() < sum) {
             System.out.println("Максимальная сумма для выдачи: " + totalCash());
             return false;
-        } else if (owner.getBalance() < sum) {
+        } else if (owners.get(ownerId).getBalance() < sum) {
             System.out.println("Недостаточно средств на счете.");
             return false;
         } else {
@@ -54,80 +64,94 @@ public class Atm {
     }
 
     private int totalCash() {
-        return (count_50 * 50) +
-                (count_100 * 100) +
-                (count_500 * 500) +
-                (count_1000 * 1000) +
-                (count_5000 * 5000);
+        int total = 0;
+        for (Map.Entry<Integer, Integer> pair :
+                banknotes.entrySet()) {
+            total += pair.getKey() * pair.getValue();
+        }
+        return total;
     }
 
-    private int[] calcCountOfBanknotes(int sum) {
-        int countOf5000 = sum / 5000;
-        sum -= countOf5000 * 5000;
-        int countOf1000 = sum / 1000;
-        sum -= countOf1000 * 1000;
-        int countOf500 = sum / 500;
-        sum -= countOf500 * 500;
-        int countOf100 = sum / 100;
-        sum -= countOf100 * 100;
-        int countOf50 = sum / 50;
-        return new int[]{countOf50, countOf100, countOf500, countOf1000, countOf5000};
+    private Map<Integer, Integer> calcCountOfBanknotes(int sum) {
+        Map<Integer, Integer> map = new TreeMap<>();
+        for (Integer nominal :
+                banknotesNominal) {
+            int expectedCount = sum / nominal;
+            int realCount = banknoteCount(nominal, expectedCount);
+            sum -= realCount * nominal;
+            map.put(nominal, realCount);
+        }
+        return map;
     }
 
-    private void showInfo(int[] packOfCash) {
-        String info = "Выдано:\n" +
-                "\tбанкнот номиналом 50 - " +
-                packOfCash[0] +
-                "\n\tбанкнот номиналом 100 - " +
-                packOfCash[1] +
-                "\n\tбанкнот номиналом 500 - " +
-                packOfCash[2] +
-                "\n\tбанкнот номиналом 1000 - " +
-                packOfCash[3] +
-                "\n\tбанкнот номиналом 5000 - " +
-                packOfCash[4];
-        System.out.println(info);
+    private int banknoteCount(int nominal, int count) {
+        if (banknotes.get(nominal) >= count) {
+            return count;
+        } else {
+            return banknotes.get(nominal);
+        }
     }
 
-    private void decreaseAtmBalance(int[] packOfCash) {
-        count_50 -= packOfCash[0];
-        count_100 -= packOfCash[1];
-        count_500 -= packOfCash[2];
-        count_1000 -= packOfCash[3];
-        count_5000 -= packOfCash[4];
+    private void showInfo(Map<Integer, Integer> packOfCash) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<Integer, Integer> pair :
+                packOfCash.entrySet()) {
+            int count = pair.getValue();
+            int nominal = pair.getKey();
+            sb.append("\tбанкнот номиналом ")
+                    .append(nominal)
+                    .append(" - ")
+                    .append(count)
+                    .append(" шт.\n");
+        }
+
+        System.out.println(sb.toString());
     }
 
-    private void increaseAtmBalance(int[] packOfCash) {
-        count_50 += packOfCash[0];
-        count_100 += packOfCash[1];
-        count_500 += packOfCash[2];
-        count_1000 += packOfCash[3];
-        count_5000 += packOfCash[4];
+    private void decreaseAtmBalance(Map<Integer, Integer> packOfCash) {
+        for (Map.Entry<Integer, Integer> pair :
+                packOfCash.entrySet()) {
+            banknotes.put(pair.getKey(), banknotes.get(pair.getKey()) - pair.getValue());
+        }
     }
 
-    private void decreaseOwnerBalance(int sum) {
-        owner.setBalance((owner.getBalance() - sum));
+    private void increaseAtmBalance(Map<Integer, Integer> packOfCash) {
+        for (Map.Entry<Integer, Integer> pair :
+                packOfCash.entrySet()) {
+            banknotes.put(pair.getKey(), banknotes.get(pair.getKey()) + pair.getValue());
+        }
     }
 
-    private void increaseOwnerBalance(int sum) {
-        owner.setBalance(owner.getBalance() + sum);
+    private void decreaseOwnerBalance(int sum, int ownerId) {
+        int ownerBalance = owners.get(ownerId).getBalance();
+        owners.get(ownerId).setBalance(ownerBalance - sum);
     }
 
-    private int calcSumOfCash(int[] packOfCash) {
-        return (packOfCash[0] * 50) +
-                (packOfCash[1] * 100) +
-                (packOfCash[2] * 500) +
-                (packOfCash[3] * 1000) +
-                (packOfCash[4] * 5000);
+    private void increaseOwnerBalance(int sum, int ownerId) {
+        int ownerBalance = owners.get(ownerId).getBalance();
+        owners.get(ownerId).setBalance(ownerBalance + sum);
+    }
+
+    private int calcSumOfCash(Map<Integer, Integer> packOfCash) {
+        int sum = 0;
+        for (Map.Entry<Integer, Integer> pair :
+                packOfCash.entrySet()) {
+            sum += pair.getKey() * pair.getValue();
+        }
+        return sum;
     }
 
     public int getAtmBalance() {
-        System.out.println("Остаток денежных средств в банкомате: " + totalCash());
-        return totalCash();
+        int balance = totalCash();
+        System.out.println("Остаток денежных средств в банкомате: " + balance);
+        return balance;
     }
 
-    public int getOwnerBalance() {
-        System.out.println("Остаток денежных средств на вашем счете: " + owner.getBalance());
-        return owner.getBalance();
+    public int getOwnerBalance(int ownerId) {
+        int balance = owners.get(ownerId).getBalance();
+        System.out.println("Остаток денежных средств на счете " +
+                owners.get(ownerId).getName() + ": " + balance);
+        return balance;
     }
 }

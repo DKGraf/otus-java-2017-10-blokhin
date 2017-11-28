@@ -1,18 +1,31 @@
 package ru.otus.l06.atm;
 
 /**
- * Некий владелец банковского счета. Для упрощения баланс
- * его счета захардкожен.
+ * Некий владелец банковского счета.
  */
 
-class AccountOwner {
-    private int balance = 32_768;
+public class AccountOwner {
+    private static int id = 0;
+    private String name;
+    private int balance;
 
-    AccountOwner() {
+    public AccountOwner(String name, int balance) {
+        this.name = name;
+        this.balance = balance;
+        id++;
+    }
+
+    public static int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     int getBalance() {
         return balance;
+
     }
 
     void setBalance(int balance) {
