@@ -11,11 +11,9 @@ import java.util.*;
 public class Atm {
     private Map<Integer, Integer> banknotes;
     private ArrayList<Integer> banknotesNominal;
-    private List<AccountOwner> owners;
+    private AccountOwner owner;
 
-    //В конструктор передается список купюр, количество
-    //купюр(одинаковое для каждого номинала) и список владельцев счетов
-    public Atm(ArrayList<Integer> banknotesNominal, int banknotesCount, List<AccountOwner> owners) {
+    public Atm(ArrayList<Integer> banknotesNominal, int banknotesCount) {
         banknotes = new TreeMap<>();
         for (Integer nominal :
                 banknotesNominal) {
@@ -24,30 +22,95 @@ public class Atm {
         Collections.sort(banknotesNominal);
         Collections.reverse(banknotesNominal);
         this.banknotesNominal = banknotesNominal;
-        this.owners = owners;
     }
 
-    public void giveCash(int sum, int ownerId) {
-        if (!checkSum(sum, ownerId)) {
-            System.out.println("Невозможно выдать запрошенную сумму.");
+    public AccountOwner getOwner() {
+        return owner;
+    }
+
+    public void insertCard(AccountOwner owner) {
+        this.owner = owner;
+    }
+
+    public void ejectCard() {
+        owner = null;
+    }
+
+    private boolean isCardInsertted() {
+        return owner != null;
+    }
+
+    public void giveCash(int sum) {
+        if (isCardInsertted()) {
+            if (!checkSum(sum)) {
+                System.out.println("Невозможно выдать запрошенную сумму.");
+            } else {
+                Map<Integer, Integer> packOfCash = calcCountOfBanknotes(sum);
+                decreaseAtmBalance(packOfCash);
+                decreaseOwnerBalance(sum);
+                System.out.println("\nВыдано:");
+                showInfo(packOfCash);
+            }
         } else {
-            Map<Integer, Integer> packOfCash = calcCountOfBanknotes(sum);
-            decreaseAtmBalance(packOfCash);
-            decreaseOwnerBalance(sum, ownerId);
-            System.out.println("\nВыдано:");
-            showInfo(packOfCash);
+            System.out.println("Вставьте карту.");
         }
     }
 
-    public void acceptCash(Map<Integer, Integer> packOfCash, int ownerId) {
-        increaseAtmBalance(packOfCash);
-        int sum = calcSumOfCash(packOfCash);
-        increaseOwnerBalance(sum, ownerId);
-        System.out.println("\nПринято:");
-        showInfo(packOfCash);
+    public void acceptCash(Map<Integer, Integer> packOfCash) {
+        if (isCardInsertted()) {
+            increaseAtmBalance(packOfCash);
+            int sum = calcSumOfCash(packOfCash);
+            increaseOwnerBalance(sum);
+            System.out.println("\nПринято:");
+            showInfo(packOfCash);
+        } else {
+            System.out.println("Вставьте карту.");
+        }
     }
 
-    private boolean checkSum(int sum, int ownerId) {
+    public int getAtmBalance() {
+        int balance = totalCash();
+        System.out.println("Остаток денежных средств в банкомате: " + balance);
+        return balance;
+    }
+
+    public int getOwnerBalance() {
+        if (isCardInsertted()) {
+            int balance = owner.getBalance();
+            System.out.println("Остаток денежных средств на счете " +
+                    owner.getName() + ": " + balance);
+            return balance;
+        } else {
+            System.out.println("Вставьте карту.");
+            return -1;
+        }
+    }
+
+    private void decreaseAtmBalance(Map<Integer, Integer> packOfCash) {
+        for (Map.Entry<Integer, Integer> pair :
+                packOfCash.entrySet()) {
+            banknotes.put(pair.getKey(), banknotes.get(pair.getKey()) - pair.getValue());
+        }
+    }
+
+    private void increaseAtmBalance(Map<Integer, Integer> packOfCash) {
+        for (Map.Entry<Integer, Integer> pair :
+                packOfCash.entrySet()) {
+            banknotes.put(pair.getKey(), banknotes.get(pair.getKey()) + pair.getValue());
+        }
+    }
+
+    private void decreaseOwnerBalance(int sum) {
+        int ownerBalance = owner.getBalance();
+        owner.setBalance(ownerBalance - sum);
+    }
+
+    private void increaseOwnerBalance(int sum) {
+        int ownerBalance = owner.getBalance();
+        owner.setBalance(ownerBalance + sum);
+    }
+
+    private boolean checkSum(int sum) {
         int minNominal = banknotesNominal.get(banknotesNominal.size() - 1);
         if (sum % (minNominal) != 0) {
             System.out.println("Сумма должна быть кратна 50.");
@@ -55,7 +118,7 @@ public class Atm {
         } else if (totalCash() < sum) {
             System.out.println("Максимальная сумма для выдачи: " + totalCash());
             return false;
-        } else if (owners.get(ownerId).getBalance() < sum) {
+        } else if (owner.getBalance() < sum) {
             System.out.println("Недостаточно средств на счете.");
             return false;
         } else {
@@ -70,6 +133,15 @@ public class Atm {
             total += pair.getKey() * pair.getValue();
         }
         return total;
+    }
+
+    private int calcSumOfCash(Map<Integer, Integer> packOfCash) {
+        int sum = 0;
+        for (Map.Entry<Integer, Integer> pair :
+                packOfCash.entrySet()) {
+            sum += pair.getKey() * pair.getValue();
+        }
+        return sum;
     }
 
     private Map<Integer, Integer> calcCountOfBanknotes(int sum) {
@@ -107,51 +179,5 @@ public class Atm {
         }
 
         System.out.println(sb.toString());
-    }
-
-    private void decreaseAtmBalance(Map<Integer, Integer> packOfCash) {
-        for (Map.Entry<Integer, Integer> pair :
-                packOfCash.entrySet()) {
-            banknotes.put(pair.getKey(), banknotes.get(pair.getKey()) - pair.getValue());
-        }
-    }
-
-    private void increaseAtmBalance(Map<Integer, Integer> packOfCash) {
-        for (Map.Entry<Integer, Integer> pair :
-                packOfCash.entrySet()) {
-            banknotes.put(pair.getKey(), banknotes.get(pair.getKey()) + pair.getValue());
-        }
-    }
-
-    private void decreaseOwnerBalance(int sum, int ownerId) {
-        int ownerBalance = owners.get(ownerId).getBalance();
-        owners.get(ownerId).setBalance(ownerBalance - sum);
-    }
-
-    private void increaseOwnerBalance(int sum, int ownerId) {
-        int ownerBalance = owners.get(ownerId).getBalance();
-        owners.get(ownerId).setBalance(ownerBalance + sum);
-    }
-
-    private int calcSumOfCash(Map<Integer, Integer> packOfCash) {
-        int sum = 0;
-        for (Map.Entry<Integer, Integer> pair :
-                packOfCash.entrySet()) {
-            sum += pair.getKey() * pair.getValue();
-        }
-        return sum;
-    }
-
-    public int getAtmBalance() {
-        int balance = totalCash();
-        System.out.println("Остаток денежных средств в банкомате: " + balance);
-        return balance;
-    }
-
-    public int getOwnerBalance(int ownerId) {
-        int balance = owners.get(ownerId).getBalance();
-        System.out.println("Остаток денежных средств на счете " +
-                owners.get(ownerId).getName() + ": " + balance);
-        return balance;
     }
 }
