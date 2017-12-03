@@ -1,8 +1,10 @@
 package ru.otus.l07;
 
-import ru.otus.l07.atm.Atm;
+import ru.otus.l07.atm.AtmImpl;
 import ru.otus.l07.atm.BanknotesNominal;
-import ru.otus.l07.department.Department;
+import ru.otus.l07.department.DepartmentImpl;
+import ru.otus.l07.interfaces.Atm;
+import ru.otus.l07.interfaces.Department;
 import ru.otus.l07.owner.AccountOwner;
 
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import static ru.otus.l07.atm.BanknotesNominal.*;
 /**
  * Просто небольшое тестовое баловство с полученным приложением.
  * В данном приложении предпринята попытка использования паттернов
- * Memento и Observer
+ * Memento и Atm
  */
 
 public class Main {
@@ -41,11 +43,11 @@ public class Main {
         list2.add(RUB_1000);
         list2.add(RUB_2000);
 
-        Department department = new Department();
+        Department department = new DepartmentImpl();
 
-        Atm atm0 = new Atm(list0, 200, department);
-        Atm atm1 = new Atm(list1, 350, department);
-        Atm atm2 = new Atm(list2, 500, department);
+        Atm atm0 = new AtmImpl(list0, 200, department);
+        Atm atm1 = new AtmImpl(list1, 350, department);
+        Atm atm2 = new AtmImpl(list2, 500, department);
 
         department.getSummaryBalance();
 
@@ -107,7 +109,7 @@ public class Main {
         atm2.ejectCard();
 
         department.getSummaryBalance();
-        department.restoreInitialState();
+        department.restoreInitialCondition();
         department.getSummaryBalance();
     }
 }

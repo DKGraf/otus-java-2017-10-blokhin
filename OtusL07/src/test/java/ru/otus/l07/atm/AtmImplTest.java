@@ -1,7 +1,9 @@
 package ru.otus.l07.atm;
 
 import org.junit.jupiter.api.Assertions;
-import ru.otus.l07.department.Department;
+import ru.otus.l07.department.DepartmentImpl;
+import ru.otus.l07.interfaces.Atm;
+import ru.otus.l07.interfaces.Department;
 import ru.otus.l07.owner.AccountOwner;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.TreeMap;
 
 import static ru.otus.l07.atm.BanknotesNominal.*;
 
-class AtmTest {
+class AtmImplTest {
     @org.junit.jupiter.api.Test
     void giveCash() {
         List<BanknotesNominal> list = new ArrayList<>();
@@ -21,8 +23,8 @@ class AtmTest {
         list.add(RUB_1000);
         list.add(RUB_5000);
 
-        Department department = new Department();
-        Atm atm = new Atm(list, 200, department);
+        Department department = new DepartmentImpl();
+        Atm atm = new AtmImpl(list, 200, department);
         AccountOwner owner = new AccountOwner("John Doe", 40_000);
 
         atm.insertCard(owner);
@@ -45,8 +47,8 @@ class AtmTest {
         list.add(RUB_1000);
         list.add(RUB_5000);
 
-        Department department = new Department();
-        Atm atm = new Atm(list, 200, department);
+        Department department = new DepartmentImpl();
+        Atm atm = new AtmImpl(list, 200, department);
         AccountOwner owner = new AccountOwner("John Doe", 40_000);
 
         atm.insertCard(owner);
@@ -74,8 +76,8 @@ class AtmTest {
         list.add(RUB_1000);
         list.add(RUB_5000);
 
-        Department department = new Department();
-        Atm atm = new Atm(list, 200, department);
+        Department department = new DepartmentImpl();
+        Atm atm = new AtmImpl(list, 200, department);
         int atmBalance = atm.getAtmBalance();
         Assertions.assertEquals(1_330_000, atmBalance);
     }
@@ -89,8 +91,8 @@ class AtmTest {
         list.add(RUB_1000);
         list.add(RUB_5000);
 
-        Department department = new Department();
-        Atm atm = new Atm(list, 200, department);
+        Department department = new DepartmentImpl();
+        Atm atm = new AtmImpl(list, 200, department);
         AccountOwner owner = new AccountOwner("John Doe", 40_000);
 
         atm.insertCard(owner);

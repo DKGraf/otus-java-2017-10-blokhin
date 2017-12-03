@@ -1,7 +1,7 @@
 package ru.otus.l07.department;
 
-import ru.otus.l07.atm.Atm;
-import ru.otus.l07.interfaces.Subject;
+import ru.otus.l07.atm.AtmImpl;
+import ru.otus.l07.interfaces.Department;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,40 +12,36 @@ import java.util.List;
  * а также восстановить состояние всех банкоматов до изначального.
  */
 
-public class Department implements Subject {
-    private List<Atm> listOfAtm;
+public class DepartmentImpl implements Department {
+    private List<AtmImpl> listOfAtmImpl;
 
-    public Department() {
-        this.listOfAtm = new ArrayList<>();
+    public DepartmentImpl() {
+        this.listOfAtmImpl = new ArrayList<>();
     }
 
     @Override
-    public void registerObserver(Atm atm) {
-        listOfAtm.add(atm);
+    public void registerAtm(AtmImpl atmImpl) {
+        listOfAtmImpl.add(atmImpl);
     }
 
     @Override
-    public void removeObserver(Atm atm) {
-        listOfAtm.remove(atm);
+    public void removeAtm(AtmImpl atmImpl) {
+        listOfAtmImpl.remove(atmImpl);
     }
 
     @Override
-    public void notifyObservers() {
-        for (Atm atm:
-                listOfAtm) {
-            atm.update();
+    public void restoreInitialCondition() {
+        for (AtmImpl atmImpl :
+                listOfAtmImpl) {
+            atmImpl.restoreInitialCondition();
         }
-    }
-
-    public void restoreInitialState() {
-        notifyObservers();
     }
 
     public int getSummaryBalance() {
         int sum = 0;
-        for (Atm atm:
-                listOfAtm) {
-            sum += atm.getAtmBalance();
+        for (AtmImpl atmImpl :
+                listOfAtmImpl) {
+            sum += atmImpl.getAtmBalance();
         }
         System.out.println("Суммарный баланс всех банкоматов: " + sum);
         return sum;

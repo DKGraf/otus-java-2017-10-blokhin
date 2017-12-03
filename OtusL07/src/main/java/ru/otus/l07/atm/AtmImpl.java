@@ -1,7 +1,7 @@
 package ru.otus.l07.atm;
 
-import ru.otus.l07.interfaces.Observer;
-import ru.otus.l07.interfaces.Subject;
+import ru.otus.l07.interfaces.Atm;
+import ru.otus.l07.interfaces.Department;
 import ru.otus.l07.owner.AccountOwner;
 
 import java.util.List;
@@ -15,13 +15,13 @@ import java.util.TreeMap;
  * доступны для выдачи.
  */
 
-public class Atm implements Observer{
+public class AtmImpl implements Atm {
     private SortedMap<BanknotesNominal, Integer> banknotes;
     private AccountOwner owner;
     private Condition initialCondition;
-    private Subject department;
+    private Department department;
 
-    public Atm(List<BanknotesNominal> nominals, int banknotesCount, Subject department) {
+    public AtmImpl(List<BanknotesNominal> nominals, int banknotesCount, Department department) {
         banknotes = new TreeMap<>((o1, o2) -> {
             int i1 = Integer.parseInt(o1.toString().substring(4));
             int i2 = Integer.parseInt(o2.toString().substring(4));
@@ -33,21 +33,20 @@ public class Atm implements Observer{
         }
         initialCondition = new Condition(nominals, banknotesCount);
         this.department = department;
-        department.registerObserver(this);
+        department.registerAtm(this);
     }
 
-    public AccountOwner getOwner() {
-        return owner;
-    }
-
+    @Override
     public void insertCard(AccountOwner owner) {
         this.owner = owner;
     }
 
+    @Override
     public void ejectCard() {
         owner = null;
     }
 
+    @Override
     public void giveCash(int sum) {
         if (isCardInserted()) {
             if (!checkSum(sum)) {
@@ -64,6 +63,7 @@ public class Atm implements Observer{
         }
     }
 
+    @Override
     public void acceptCash(Map<BanknotesNominal, Integer> packOfCash) {
         if (isCardInserted()) {
             increaseAtmBalance(packOfCash);
@@ -76,12 +76,14 @@ public class Atm implements Observer{
         }
     }
 
+    @Override
     public int getAtmBalance() {
         int balance = totalCash();
         System.out.println("Остаток денежных средств в банкомате: " + balance);
         return balance;
     }
 
+    @Override
     public int getOwnerBalance() {
         if (isCardInserted()) {
             int balance = owner.getBalance();
@@ -201,7 +203,8 @@ public class Atm implements Observer{
         System.out.println(sb.toString());
     }
 
-    private void restoreInitialCondition() {
+    @Override
+    public void restoreInitialCondition() {
         List<BanknotesNominal> nominals = initialCondition.getNominals();
         int count = initialCondition.getCount();
         banknotes = new TreeMap<>((o1, o2) -> {
@@ -213,10 +216,5 @@ public class Atm implements Observer{
                 nominals) {
             banknotes.put(nominal, count);
         }
-    }
-
-    @Override
-    public void update() {
-        restoreInitialCondition();
     }
 }
