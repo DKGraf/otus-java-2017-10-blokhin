@@ -10,7 +10,7 @@ import java.util.Map;
  */
 
 public interface Atm {
-    void insertCard(Card owner);
+    void insertCard(Card card);
 
     void ejectCard();
 
