@@ -6,95 +6,95 @@ import ru.otus.l07.atm.AtmImpl;
 import ru.otus.l07.atm.BanknotesNominal;
 import ru.otus.l07.interfaces.Atm;
 import ru.otus.l07.interfaces.Department;
-import ru.otus.l07.owner.AccountOwner;
+import ru.otus.l07.owner.Card;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static ru.otus.l07.atm.BanknotesNominal.*;
 
 class DepartmentImplTest {
     @Test
     void restoreInitialState() {
-        List<BanknotesNominal> list0 = new ArrayList<>();
-        list0.add(RUB_50);
-        list0.add(RUB_100);
-        list0.add(RUB_500);
-        list0.add(RUB_1000);
-        list0.add(RUB_5000);
+        Map<BanknotesNominal, Integer> map0 = new HashMap<>();
+        map0.put(RUB_50, 100);
+        map0.put(RUB_100, 100);
+        map0.put(RUB_500, 100);
+        map0.put(RUB_1000, 100);
+        map0.put(RUB_5000, 150);
 
-        List<BanknotesNominal> list1 = new ArrayList<>();
-        list1.add(RUB_50);
-        list1.add(RUB_100);
-        list1.add(RUB_200);
-        list1.add(RUB_500);
-        list1.add(RUB_1000);
+        Map<BanknotesNominal, Integer> map1 = new HashMap<>();
+        map1.put(RUB_50, 125);
+        map1.put(RUB_100, 125);
+        map1.put(RUB_200, 125);
+        map1.put(RUB_500, 125);
+        map1.put(RUB_1000, 100);
 
-        List<BanknotesNominal> list2 = new ArrayList<>();
-        list2.add(RUB_100);
-        list2.add(RUB_200);
-        list2.add(RUB_500);
-        list2.add(RUB_1000);
-        list2.add(RUB_2000);
+        Map<BanknotesNominal, Integer> map2 = new HashMap<>();
+        map2.put(RUB_100, 200);
+        map2.put(RUB_200, 200);
+        map2.put(RUB_500, 200);
+        map2.put(RUB_1000, 200);
+        map2.put(RUB_2000, 150);
 
         Department department = new DepartmentImpl();
 
-        AtmImpl atmImpl0 = new AtmImpl(list0, 200, department);
-        AtmImpl atmImpl1 = new AtmImpl(list1, 350, department);
-        AtmImpl atmImpl2 = new AtmImpl(list2, 500, department);
+        Atm atm0 = new AtmImpl(map0, department);
+        Atm atm1 = new AtmImpl(map1, department);
+        Atm atm2 = new AtmImpl(map2, department);
 
-        AccountOwner owner = new AccountOwner("John Doe", 40_000);
+        Card owner = new Card("John Doe", 40_000);
 
-        atmImpl0.insertCard(owner);
-        atmImpl0.giveCash(13300);
-        atmImpl0.ejectCard();
+        atm0.insertCard(owner);
+        atm0.giveCash(13300);
+        atm0.ejectCard();
 
-        atmImpl1.insertCard(owner);
-        atmImpl1.giveCash(13300);
-        atmImpl1.ejectCard();
+        atm1.insertCard(owner);
+        atm1.giveCash(13300);
+        atm1.ejectCard();
 
-        atmImpl2.insertCard(owner);
-        atmImpl2.giveCash(13300);
-        atmImpl2.ejectCard();
+        atm2.insertCard(owner);
+        atm2.giveCash(13300);
+        atm2.ejectCard();
 
         department.restoreInitialCondition();
         int totalBalance = department.getSummaryBalance();
 
-        Assertions.assertEquals(3_877_500, totalBalance);
+        Assertions.assertEquals(1_741_350, totalBalance);
     }
 
     @Test
     void getSummaryBalance() {
-        List<BanknotesNominal> list0 = new ArrayList<>();
-        list0.add(RUB_50);
-        list0.add(RUB_100);
-        list0.add(RUB_500);
-        list0.add(RUB_1000);
-        list0.add(RUB_5000);
+        Map<BanknotesNominal, Integer> map0 = new HashMap<>();
+        map0.put(RUB_50, 100);
+        map0.put(RUB_100, 100);
+        map0.put(RUB_500, 100);
+        map0.put(RUB_1000, 100);
+        map0.put(RUB_5000, 150);
 
-        List<BanknotesNominal> list1 = new ArrayList<>();
-        list1.add(RUB_50);
-        list1.add(RUB_100);
-        list1.add(RUB_200);
-        list1.add(RUB_500);
-        list1.add(RUB_1000);
+        Map<BanknotesNominal, Integer> map1 = new HashMap<>();
+        map1.put(RUB_50, 125);
+        map1.put(RUB_100, 125);
+        map1.put(RUB_200, 125);
+        map1.put(RUB_500, 125);
+        map1.put(RUB_1000, 100);
 
-        List<BanknotesNominal> list2 = new ArrayList<>();
-        list2.add(RUB_100);
-        list2.add(RUB_200);
-        list2.add(RUB_500);
-        list2.add(RUB_1000);
-        list2.add(RUB_2000);
+        Map<BanknotesNominal, Integer> map2 = new HashMap<>();
+        map2.put(RUB_100, 200);
+        map2.put(RUB_200, 200);
+        map2.put(RUB_500, 200);
+        map2.put(RUB_1000, 200);
+        map2.put(RUB_2000, 150);
 
         Department department = new DepartmentImpl();
 
-        Atm atm0 = new AtmImpl(list0, 200, department);
-        Atm atm1 = new AtmImpl(list1, 350, department);
-        Atm atm2 = new AtmImpl(list2, 500, department);
+        Atm atm0 = new AtmImpl(map0, department);
+        Atm atm1 = new AtmImpl(map1, department);
+        Atm atm2 = new AtmImpl(map2, department);
 
         int totalBalance = department.getSummaryBalance();
 
-        Assertions.assertEquals(3_877_500, totalBalance);
+        Assertions.assertEquals(1_781_250, totalBalance);
     }
 
 }

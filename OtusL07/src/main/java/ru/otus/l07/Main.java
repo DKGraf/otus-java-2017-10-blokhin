@@ -5,12 +5,9 @@ import ru.otus.l07.atm.BanknotesNominal;
 import ru.otus.l07.department.DepartmentImpl;
 import ru.otus.l07.interfaces.Atm;
 import ru.otus.l07.interfaces.Department;
-import ru.otus.l07.owner.AccountOwner;
+import ru.otus.l07.owner.Card;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static ru.otus.l07.atm.BanknotesNominal.*;
 
@@ -22,90 +19,90 @@ import static ru.otus.l07.atm.BanknotesNominal.*;
 
 public class Main {
     public static void main(String[] args) {
-        List<BanknotesNominal> list0 = new ArrayList<>();
-        list0.add(RUB_50);
-        list0.add(RUB_100);
-        list0.add(RUB_500);
-        list0.add(RUB_1000);
-        list0.add(RUB_5000);
+        Map<BanknotesNominal, Integer> map0 = new HashMap<>();
+        map0.put(RUB_50, 100);
+        map0.put(RUB_100, 100);
+        map0.put(RUB_500, 100);
+        map0.put(RUB_1000, 100);
+        map0.put(RUB_5000, 150);
 
-        List<BanknotesNominal> list1 = new ArrayList<>();
-        list1.add(RUB_50);
-        list1.add(RUB_100);
-        list1.add(RUB_200);
-        list1.add(RUB_500);
-        list1.add(RUB_1000);
+        Map<BanknotesNominal, Integer> map1 = new HashMap<>();
+        map1.put(RUB_50, 125);
+        map1.put(RUB_100, 125);
+        map1.put(RUB_200, 125);
+        map1.put(RUB_500, 125);
+        map1.put(RUB_1000, 100);
 
-        List<BanknotesNominal> list2 = new ArrayList<>();
-        list2.add(RUB_100);
-        list2.add(RUB_200);
-        list2.add(RUB_500);
-        list2.add(RUB_1000);
-        list2.add(RUB_2000);
+        Map<BanknotesNominal, Integer> map2 = new HashMap<>();
+        map2.put(RUB_100, 200);
+        map2.put(RUB_200, 200);
+        map2.put(RUB_500, 200);
+        map2.put(RUB_1000, 200);
+        map2.put(RUB_2000, 150);
 
         Department department = new DepartmentImpl();
 
-        Atm atm0 = new AtmImpl(list0, 200, department);
-        Atm atm1 = new AtmImpl(list1, 350, department);
-        Atm atm2 = new AtmImpl(list2, 500, department);
+        Atm atm0 = new AtmImpl(map0, department);
+        Atm atm1 = new AtmImpl(map1, department);
+        Atm atm2 = new AtmImpl(map2, department);
 
         department.getSummaryBalance();
 
-        AccountOwner owner = new AccountOwner("John Doe", 40_000);
+        Card owner = new Card("John Doe", 40_000);
 
         atm0.insertCard(owner);
         atm0.getAtmBalance();
-        atm0.getOwnerBalance();
+        atm0.getCardBalance();
         atm0.giveCash(13300);
         atm0.getAtmBalance();
-        atm0.getOwnerBalance();
-        Map<BanknotesNominal, Integer> map0 = new TreeMap<>();
-        map0.put(RUB_50, 10);
-        map0.put(RUB_100, 10);
-        map0.put(RUB_500, 10);
-        map0.put(RUB_1000, 10);
-        map0.put(RUB_5000, 10);
-        atm0.acceptCash(map0);
+        atm0.getCardBalance();
+        Map<BanknotesNominal, Integer> map3 = new TreeMap<>();
+        map3.put(RUB_50, 10);
+        map3.put(RUB_100, 10);
+        map3.put(RUB_500, 10);
+        map3.put(RUB_1000, 10);
+        map3.put(RUB_5000, 10);
+        atm0.acceptCash(map3);
         atm0.getAtmBalance();
-        atm0.getOwnerBalance();
+        atm0.getCardBalance();
         atm0.ejectCard();
 
         department.getSummaryBalance();
 
         atm1.insertCard(owner);
         atm1.getAtmBalance();
-        atm1.getOwnerBalance();
+        atm1.getCardBalance();
         atm1.giveCash(13300);
         atm1.getAtmBalance();
-        atm1.getOwnerBalance();
-        Map<BanknotesNominal, Integer> map1 = new TreeMap<>();
-        map1.put(RUB_50, 10);
-        map1.put(RUB_100, 10);
-        map1.put(RUB_200, 10);
-        map1.put(RUB_500, 10);
-        map1.put(RUB_1000, 10);
-        atm1.acceptCash(map1);
+        atm1.getCardBalance();
+        Map<BanknotesNominal, Integer> map4 = new TreeMap<>();
+        map4.put(RUB_50, 10);
+        map4.put(RUB_100, 10);
+        map4.put(RUB_200, 10);
+        map4.put(RUB_500, 10);
+        map4.put(RUB_1000, 10);
+        atm1.acceptCash(map4);
         atm1.getAtmBalance();
-        atm1.getOwnerBalance();
+        atm1.getCardBalance();
         atm1.ejectCard();
 
         department.getSummaryBalance();
 
         atm2.insertCard(owner);
         atm2.getAtmBalance();
-        atm2.getOwnerBalance();
+        atm2.getCardBalance();
         atm2.giveCash(13300);
         atm2.getAtmBalance();
-        atm2.getOwnerBalance();
-        Map<BanknotesNominal, Integer> map2 = new TreeMap<>();
-        map2.put(RUB_100, 10);
-        map2.put(RUB_200, 10);
-        map2.put(RUB_500, 10);
-        map2.put(RUB_1000, 10);
-        map2.put(RUB_2000, 10);
-        atm2.acceptCash(map2);
+        atm2.getCardBalance();
+        Map<BanknotesNominal, Integer> map5 = new TreeMap<>();
+        map5.put(RUB_100, 10);
+        map5.put(RUB_200, 10);
+        map5.put(RUB_500, 10);
+        map5.put(RUB_1000, 10);
+        map5.put(RUB_2000, 10);
+        atm2.acceptCash(map5);
         atm2.getAtmBalance();
-        atm2.getOwnerBalance();
+        atm2.getCardBalance();
         atm2.ejectCard();
 
         department.getSummaryBalance();

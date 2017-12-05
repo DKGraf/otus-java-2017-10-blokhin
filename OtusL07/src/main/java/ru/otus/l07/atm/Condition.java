@@ -1,6 +1,6 @@
 package ru.otus.l07.atm;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Данный класс предназначен для хранения начального состояния банкомата:
@@ -9,19 +9,13 @@ import java.util.List;
  */
 
 class Condition {
-    private List<BanknotesNominal> nominals;
-    private int count;
+    private Map<BanknotesNominal, Integer> cash;
 
-    Condition(List<BanknotesNominal> nominals, int count) {
-        this.nominals = nominals;
-        this.count = count;
+    Condition(Map<BanknotesNominal, Integer> cash) {
+        this.cash = cash;
     }
 
-    List<BanknotesNominal> getNominals() {
-        return nominals;
-    }
-
-    int getCount() {
-        return count;
+    Map<BanknotesNominal, Integer> getCondition() {
+        return cash;
     }
 }

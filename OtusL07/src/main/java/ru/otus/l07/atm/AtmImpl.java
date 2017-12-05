@@ -2,9 +2,8 @@ package ru.otus.l07.atm;
 
 import ru.otus.l07.interfaces.Atm;
 import ru.otus.l07.interfaces.Department;
-import ru.otus.l07.owner.AccountOwner;
+import ru.otus.l07.owner.Card;
 
-import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -16,34 +15,38 @@ import java.util.TreeMap;
  */
 
 public class AtmImpl implements Atm {
+    private static int atmCount = 0;
+    private int atmNumber = 0;
     private SortedMap<BanknotesNominal, Integer> banknotes;
-    private AccountOwner owner;
+    private Card card;
     private Condition initialCondition;
     private Department department;
 
-    public AtmImpl(List<BanknotesNominal> nominals, int banknotesCount, Department department) {
+    public AtmImpl(Map<BanknotesNominal, Integer> cash, Department department) {
+        ++atmCount;
+        atmNumber = atmCount;
         banknotes = new TreeMap<>((o1, o2) -> {
             int i1 = Integer.parseInt(o1.toString().substring(4));
             int i2 = Integer.parseInt(o2.toString().substring(4));
             return i2 - i1;
         });
-        for (BanknotesNominal nominal :
-                nominals) {
-            banknotes.put(nominal, banknotesCount);
+        for (Map.Entry<BanknotesNominal, Integer> pair :
+                cash.entrySet()) {
+            banknotes.put(pair.getKey(), pair.getValue());
         }
-        initialCondition = new Condition(nominals, banknotesCount);
+        initialCondition = new Condition(banknotes);
         this.department = department;
         department.registerAtm(this);
     }
 
     @Override
-    public void insertCard(AccountOwner owner) {
-        this.owner = owner;
+    public void insertCard(Card card) {
+        this.card = card;
     }
 
     @Override
     public void ejectCard() {
-        owner = null;
+        card = null;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class AtmImpl implements Atm {
             } else {
                 Map<BanknotesNominal, Integer> packOfCash = calcCountOfBanknotes(sum);
                 decreaseAtmBalance(packOfCash);
-                decreaseOwnerBalance(sum);
+                card.decreaseBalance(sum);
                 System.out.println("\nВыдано:");
                 showInfo(packOfCash);
             }
@@ -68,7 +71,7 @@ public class AtmImpl implements Atm {
         if (isCardInserted()) {
             increaseAtmBalance(packOfCash);
             int sum = calcSumOfCash(packOfCash);
-            increaseOwnerBalance(sum);
+            card.increaseBalance(sum);
             System.out.println("\nПринято:");
             showInfo(packOfCash);
         } else {
@@ -79,16 +82,16 @@ public class AtmImpl implements Atm {
     @Override
     public int getAtmBalance() {
         int balance = totalCash();
-        System.out.println("Остаток денежных средств в банкомате: " + balance);
+        System.out.println("Остаток денежных средств в банкомате № " + atmNumber + ": " + balance);
         return balance;
     }
 
     @Override
-    public int getOwnerBalance() {
+    public int getCardBalance() {
         if (isCardInserted()) {
-            int balance = owner.getBalance();
+            int balance = card.getBalance();
             System.out.println("Остаток денежных средств на счете " +
-                    owner.getName() + ": " + balance);
+                    card.getOwnerName() + ": " + balance);
             return balance;
         } else {
             System.out.println("Вставьте карту.");
@@ -97,7 +100,7 @@ public class AtmImpl implements Atm {
     }
 
     private boolean isCardInserted() {
-        return owner != null;
+        return card != null;
     }
 
     private void decreaseAtmBalance(Map<BanknotesNominal, Integer> packOfCash) {
@@ -114,16 +117,6 @@ public class AtmImpl implements Atm {
         }
     }
 
-    private void decreaseOwnerBalance(int sum) {
-        int ownerBalance = owner.getBalance();
-        owner.setBalance(ownerBalance - sum);
-    }
-
-    private void increaseOwnerBalance(int sum) {
-        int ownerBalance = owner.getBalance();
-        owner.setBalance(ownerBalance + sum);
-    }
-
     private boolean checkSum(int sum) {
         int minNominal = getNominal(banknotes.lastKey());
         if (sum % (minNominal) != 0) {
@@ -132,7 +125,7 @@ public class AtmImpl implements Atm {
         } else if (totalCash() < sum) {
             System.out.println("Максимальная сумма для выдачи: " + totalCash());
             return false;
-        } else if (owner.getBalance() < sum) {
+        } else if (card.getBalance() < sum) {
             System.out.println("Недостаточно средств на счете.");
             return false;
         } else {
@@ -150,9 +143,7 @@ public class AtmImpl implements Atm {
     }
 
     private int getNominal(BanknotesNominal nominal) {
-        String stringNominal = nominal.toString();
-        String nominalValue = stringNominal.substring(4, stringNominal.length());
-        return Integer.parseInt(nominalValue);
+        return nominal.getNominal();
     }
 
     private int calcSumOfCash(Map<BanknotesNominal, Integer> packOfCash) {
@@ -205,16 +196,15 @@ public class AtmImpl implements Atm {
 
     @Override
     public void restoreInitialCondition() {
-        List<BanknotesNominal> nominals = initialCondition.getNominals();
-        int count = initialCondition.getCount();
+        Map<BanknotesNominal, Integer> condition = initialCondition.getCondition();
         banknotes = new TreeMap<>((o1, o2) -> {
             int i1 = Integer.parseInt(o1.toString().substring(4));
             int i2 = Integer.parseInt(o2.toString().substring(4));
             return i2 - i1;
         });
-        for (BanknotesNominal nominal :
-                nominals) {
-            banknotes.put(nominal, count);
+        for (Map.Entry<BanknotesNominal, Integer> pair :
+                condition.entrySet()) {
+            banknotes.put(pair.getKey(), pair.getValue());
         }
     }
 }

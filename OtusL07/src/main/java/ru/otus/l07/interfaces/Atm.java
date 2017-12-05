@@ -1,7 +1,7 @@
 package ru.otus.l07.interfaces;
 
 import ru.otus.l07.atm.BanknotesNominal;
-import ru.otus.l07.owner.AccountOwner;
+import ru.otus.l07.owner.Card;
 
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import java.util.Map;
  */
 
 public interface Atm {
-    void insertCard(AccountOwner owner);
+    void insertCard(Card owner);
 
     void ejectCard();
 
@@ -20,7 +20,7 @@ public interface Atm {
 
     int getAtmBalance();
 
-    int getOwnerBalance();
+    int getCardBalance();
 
     void restoreInitialCondition();
 }
