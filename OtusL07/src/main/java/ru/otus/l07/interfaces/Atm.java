@@ -5,10 +5,6 @@ import ru.otus.l07.owner.Card;
 
 import java.util.Map;
 
-/**
- * Интерфейс, использумеый для реализации паттерна Atm.
- */
-
 public interface Atm {
     void insertCard(Card card);
 
