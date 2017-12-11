@@ -10,6 +10,6 @@ public class Main {
         String json = gson.toJson(testObject);
         System.out.println("gson: " + json);
         ObjectWriter os = new ObjectWriter(testObject);
-        System.out.println("myObjectWriter: " + os.write());
+        System.out.println("myOW: " + os.getJSONString());
     }
 }
