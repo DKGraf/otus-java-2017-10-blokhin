@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 
 public class SimpleProcessor implements Processor {
     @Override
-    public Object process(Object obj, Field field) {
-        return obj;
+    public String process(Object obj, Field field) {
+        return obj.toString();
     }
 }

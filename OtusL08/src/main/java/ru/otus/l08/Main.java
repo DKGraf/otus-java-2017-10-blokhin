@@ -1,6 +1,7 @@
 package ru.otus.l08;
 
 import com.google.gson.Gson;
+import ru.otus.l08.victims.TestObject;
 import ru.otus.l08.writer.ObjectWriter;
 
 public class Main {

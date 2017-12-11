@@ -1,27 +1,25 @@
-//package ru.otus.l08.writer;
-//
-//import com.google.gson.Gson;
-//import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.Test;
-//import ru.otus.l08.TestObject;
-//
-//class ObjectWriterTest {
-//
-//    @Test
-//    void write() throws IllegalAccessException {
-//        TestObject to1 = new TestObject();
-//        ObjectWriter os = new ObjectWriter(to1);
-//        String myJSON = os.getJSONString().toString();
-//
-//        Gson gson = new Gson();
-//        TestObject to2 = gson.fromJson(myJSON, TestObject.class);
-//
-//        Assertions.assertEquals(to1.getI1(), to2.getI1());
-//        Assertions.assertEquals(to1.getS1(), to2.getS1());
-//        Assertions.assertArrayEquals(to1.getArrayOfInt(), to2.getArrayOfInt());
-//        Assertions.assertArrayEquals(to1.getArrayOfString(), to2.getArrayOfString());
-//        Assertions.assertIterableEquals(to1.getList(), to2.getList());
-//        Assertions.assertIterableEquals(to1.getLinList(), to2.getLinList());
-//        Assertions.assertEquals(to1.getMap(), to2.getMap());
-//    }
-//}
+package ru.otus.l08.writer;
+
+import com.google.gson.Gson;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import ru.otus.l08.victims.TestObject;
+
+class ObjectWriterTest {
+    @Test
+    void getJSONString() throws IllegalAccessException {
+        TestObject to1 = new TestObject();
+
+        String gson1 = new Gson().toJson(to1);
+        String gson2 = new Gson().toJson(123);
+        String gson3 = new Gson().toJson("abc");
+
+        String myJSON1 = new ObjectWriter(to1).getJSONString();
+        String myJSON2 = new ObjectWriter(123).getJSONString();
+        String myJSON3 = new ObjectWriter("abc").getJSONString();
+
+        Assertions.assertEquals(gson1, myJSON1);
+        Assertions.assertEquals(gson2, myJSON2);
+        Assertions.assertEquals(gson3, myJSON3);
+    }
+}

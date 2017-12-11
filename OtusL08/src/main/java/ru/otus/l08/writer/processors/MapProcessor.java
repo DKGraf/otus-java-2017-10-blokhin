@@ -13,10 +13,10 @@ import java.util.Map;
 public class MapProcessor implements Processor {
     @SuppressWarnings("unchecked")
     @Override
-    public Object process(Object obj, Field field) {
+    public String process(Object obj, Field field) {
         Map map = new HashMap<>((Map) obj);
         JSONObject result = new JSONObject();
         map.forEach(result::put);
-        return result;
+        return result.toJSONString();
     }
 }

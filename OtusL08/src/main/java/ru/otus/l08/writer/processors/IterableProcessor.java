@@ -11,12 +11,12 @@ import java.lang.reflect.Field;
 public class IterableProcessor implements Processor {
     @SuppressWarnings("unchecked")
     @Override
-    public Object process(Object obj, Field field) {
+    public String process(Object obj, Field field) {
         JSONArray array = new JSONArray();
         for (Object o :
                 (Iterable) obj) {
             array.add(o);
         }
-        return array;
+        return array.toJSONString();
     }
 }

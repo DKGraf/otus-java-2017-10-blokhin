@@ -1,6 +1,6 @@
 package ru.otus.l08.writer;
 
-import org.json.simple.JSONObject;
+import ru.otus.l08.writer.builder.JSONStringBuilder;
 import ru.otus.l08.writer.checker.TypeChecker;
 import ru.otus.l08.writer.processors.Processor;
 import ru.otus.l08.writer.processors.ProcessorFactory;
@@ -24,12 +24,12 @@ public class ObjectWriter {
 
     @SuppressWarnings("unchecked")
     public String getJSONString() throws IllegalAccessException {
+        JSONStringBuilder stringCreator = new JSONStringBuilder();
         if (TypeChecker.isPrimitiveOrWrapper(aClass)) {
             return obj.toString();
         } else if (TypeChecker.isString(aClass)) {
             return "\"" + obj + "\"";
         } else {
-            JSONObject result = new JSONObject();
             for (Field field :
                     fields) {
                 String fieldName = field.getName();
@@ -37,9 +37,9 @@ public class ObjectWriter {
                 Processor processor = ProcessorFactory.getProcessor(fieldType);
                 field.setAccessible(true);
                 Object fieldValue = field.get(obj);
-                result.put(fieldName, processor.process(fieldValue, field));
+                stringCreator.build(fieldName, processor.process(fieldValue, field), fieldType);
             }
-            return result.toJSONString();
         }
+        return stringCreator.getJSONString();
     }
 }
