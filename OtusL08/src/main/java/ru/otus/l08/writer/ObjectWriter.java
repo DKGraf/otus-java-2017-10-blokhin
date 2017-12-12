@@ -28,7 +28,7 @@ public class ObjectWriter {
     @SuppressWarnings("unchecked")
     public String getJSONString() throws IllegalAccessException {
         JSONStringBuilder stringCreator = new JSONStringBuilder();
-        if (obj == null) return null;
+        if (obj == null) return "null";
         if (TypeChecker.isPrimitiveOrWrapper(aClass)) {
             return obj.toString();
         } else if (TypeChecker.isString(aClass)) {

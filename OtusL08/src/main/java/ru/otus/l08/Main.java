@@ -7,10 +7,16 @@ import ru.otus.l08.writer.ObjectWriter;
 public class Main {
     public static void main(String[] args) throws IllegalAccessException {
         TestObject testObject = new TestObject();
-        Gson gson = new Gson();
-        String json = gson.toJson(testObject);
-        System.out.println("gson: " + json);
-        ObjectWriter os = new ObjectWriter(testObject);
-        System.out.println("myOW: " + os.getJSONString());
+        System.out.println("gson: " + new Gson().toJson(testObject));
+        System.out.println("myOW: " + new ObjectWriter(testObject).getJSONString() + "\n");
+
+        System.out.println("gson: " + new Gson().toJson(123));
+        System.out.println("myOW: " + new ObjectWriter(123).getJSONString() + "\n");
+
+        System.out.println("gson: " + new Gson().toJson("abc"));
+        System.out.println("myOW: " + new ObjectWriter("abc").getJSONString() + "\n");
+
+        System.out.println("gson: " + new Gson().toJson(null));
+        System.out.println("myOW: " + new ObjectWriter(null).getJSONString() + "\n");
     }
 }

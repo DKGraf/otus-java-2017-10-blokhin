@@ -7,6 +7,6 @@ import java.lang.reflect.Field;
 public class ClassProcessor implements Processor {
     @Override
     public String process(Object obj, Field field) throws IllegalAccessException {
-        return new ObjectWriter(obj).getJSONString();
+            return new ObjectWriter(obj).getJSONString();
     }
 }

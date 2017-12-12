@@ -2,6 +2,10 @@ package ru.otus.l08.writer.builder;
 
 import ru.otus.l08.writer.checker.TypeChecker;
 
+/**
+ * Класс, используемый для построения и вывода итоговой JSON строки.
+ */
+
 public class JSONStringBuilder {
     private StringBuilder sb;
 

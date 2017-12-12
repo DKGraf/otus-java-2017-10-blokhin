@@ -1,9 +1,6 @@
 package ru.otus.l08.victims;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Объект для проведения бесчеловечных опытов по преобразованию.
@@ -19,7 +16,7 @@ public class TestObject {
     private HashMap<Integer, String> map;
     private HashSet<Integer> set;
     private TestClass testClass;
-    String field = null;
+    private String field = null;
 
     public TestObject() {
         list = new ArrayList<>();
