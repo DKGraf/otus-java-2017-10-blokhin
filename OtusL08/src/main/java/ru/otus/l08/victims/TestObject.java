@@ -19,6 +19,7 @@ public class TestObject {
     private HashMap<Integer, String> map;
     private HashSet<Integer> set;
     private TestClass testClass;
+    String field = null;
 
     public TestObject() {
         list = new ArrayList<>();

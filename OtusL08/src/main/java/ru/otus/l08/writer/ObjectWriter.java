@@ -5,6 +5,7 @@ import ru.otus.l08.writer.checker.TypeChecker;
 import ru.otus.l08.writer.processors.Processor;
 import ru.otus.l08.writer.processors.ProcessorFactory;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 
 /**
@@ -16,15 +17,18 @@ public class ObjectWriter {
     private Field[] fields;
     private Class aClass;
 
-    public ObjectWriter(Object obj) {
+    public ObjectWriter(@Nullable Object obj) {
         this.obj = obj;
-        aClass = obj.getClass();
-        fields = aClass.getDeclaredFields();
+        if (obj != null) {
+            aClass = obj.getClass();
+            fields = aClass.getDeclaredFields();
+        }
     }
 
     @SuppressWarnings("unchecked")
     public String getJSONString() throws IllegalAccessException {
         JSONStringBuilder stringCreator = new JSONStringBuilder();
+        if (obj == null) return null;
         if (TypeChecker.isPrimitiveOrWrapper(aClass)) {
             return obj.toString();
         } else if (TypeChecker.isString(aClass)) {
@@ -37,7 +41,9 @@ public class ObjectWriter {
                 Processor processor = ProcessorFactory.getProcessor(fieldType);
                 field.setAccessible(true);
                 Object fieldValue = field.get(obj);
-                stringCreator.build(fieldName, processor.process(fieldValue, field), fieldType);
+                if (fieldValue != null) {
+                    stringCreator.build(fieldName, processor.process(fieldValue, field), fieldType);
+                }
             }
         }
         return stringCreator.getJSONString();
