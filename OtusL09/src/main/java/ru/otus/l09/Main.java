@@ -21,7 +21,7 @@ public class Main {
             System.out.println("User age: " + dbs.getUserAge(1) + "\n");
 
             Connection connection = ConnectionHelper.getConnection();
-            new Executor(connection, new DBService()).save(new UsersDataSet(1, "John", 30));
+            new Executor(connection, new DBService()).save(new UsersDataSet(1, "Anotherone", 30));
             System.out.println("User name: " + dbs.getUserName(2));
             System.out.println("User age: " + dbs.getUserAge(2) + "\n");
 

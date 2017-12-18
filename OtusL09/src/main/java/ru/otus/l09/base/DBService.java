@@ -7,6 +7,11 @@ import java.sql.SQLException;
 
 import static ru.otus.l09.connection.ConnectionHelper.getConnection;
 
+/**
+ * Типы полей немного изменены по сравнению с заданием,
+ * если говорить точнее, то они адаптированы к реалиям
+ * PostgreSQL.
+ */
 
 public class DBService implements AutoCloseable {
     private static final String CREATE_TABLE_USERS = "create table if not exists users (" +
@@ -30,7 +35,6 @@ public class DBService implements AutoCloseable {
             connection.setAutoCommit(false);
             exec.execUpdate(String.format(INSERT_INTO_USERS, name, age));
             connection.commit();
-            System.out.println("User added");
         } catch (SQLException e) {
             connection.rollback();
         } finally {
@@ -41,13 +45,11 @@ public class DBService implements AutoCloseable {
     public void deleteTables() throws SQLException {
         Executor exec = new Executor(connection);
         exec.execUpdate(DELETE_USERS);
-        System.out.println("Table dropped");
     }
 
     public void prepareTables() throws SQLException {
         Executor exec = new Executor(connection);
         exec.execUpdate(CREATE_TABLE_USERS);
-        System.out.println("Table created");
     }
 
     public String getUserName(long id) throws SQLException {
@@ -71,7 +73,6 @@ public class DBService implements AutoCloseable {
     @Override
     public void close() throws Exception {
         connection.close();
-        System.out.println("Connection closed. Bye!");
     }
 
     public String getMetaData() {
