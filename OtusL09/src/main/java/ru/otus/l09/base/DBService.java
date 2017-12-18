@@ -9,12 +9,14 @@ import static ru.otus.l09.connection.ConnectionHelper.getConnection;
 
 
 public class DBService implements AutoCloseable {
-    private static final String CREATE_TABLE_USER = "create table if not exists user (id bigint(20)" +
-            " NOT NULL auto_increment, name varchar(255), age int(3), primary key (id))";
-    private static final String INSERT_INTO_USER = "insert into user (name) values(?)";
-    private static final String INSERT_USER = "insert into user (name) values ('%s')";
-    private static final String DELETE_USER = "drop table user";
-    private static final String SELECT_USER = "select name from user where id=%s";
+    private static final String CREATE_TABLE_USERS = "create table if not exists users (" +
+            "id bigserial not null primary key, " +
+            "name varchar(255), " +
+            "age integer)";
+    private static final String INSERT_INTO_USERS = "insert into users (name, age) values ('%s', %s)";
+    private static final String DELETE_USERS = "drop table users";
+    private static final String SELECT_USERS_NAME = "select name from users where id=%s";
+    private static final String SELECT_USERS_AGE = "select age from users where id=%s";
     private final Connection connection;
 
 
@@ -22,47 +24,65 @@ public class DBService implements AutoCloseable {
         connection = getConnection();
     }
 
+    public void addUser(String name, int age) throws SQLException {
+        try {
+            Executor exec = new Executor(connection);
+            connection.setAutoCommit(false);
+            exec.execUpdate(String.format(INSERT_INTO_USERS, name, age));
+            connection.commit();
+            System.out.println("User added");
+        } catch (SQLException e) {
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
+        }
+    }
+
     public void deleteTables() throws SQLException {
-        Executor exec = new Executor(getConnection());
-        exec.execUpdate(DELETE_USER);
+        Executor exec = new Executor(connection);
+        exec.execUpdate(DELETE_USERS);
         System.out.println("Table dropped");
     }
 
     public void prepareTables() throws SQLException {
-        Executor exec = new Executor(getConnection());
-        exec.execUpdate(CREATE_TABLE_USER);
+        Executor exec = new Executor(connection);
+        exec.execUpdate(CREATE_TABLE_USERS);
         System.out.println("Table created");
     }
 
-    public String getUserName(int id) throws SQLException {
-        Executor execT = new Executor(getConnection());
+    public String getUserName(long id) throws SQLException {
+        Executor execT = new Executor(connection);
 
-        return execT.execQuery(String.format(SELECT_USER, id), result -> {
+        return execT.execQuery(String.format(SELECT_USERS_NAME, id), result -> {
             result.next();
             return result.getString("name");
         });
     }
 
-    public void addUsers(String... names) throws SQLException {
-        try {
-            Executor exec = new Executor(getConnection());
-            getConnection().setAutoCommit(false);
-            exec.execUpdate(INSERT_INTO_USER, statement -> {
-                for (String name : names) {
-                    statement.setString(1, name);
-                    statement.execute();
-                }
-            });
-            getConnection().commit();
-        } catch (SQLException e) {
-            getConnection().rollback();
-        } finally {
-            getConnection().setAutoCommit(true);
-        }
+    public int getUserAge(long id) throws SQLException {
+        Executor execT = new Executor(connection);
+
+        return execT.execQuery(String.format(SELECT_USERS_AGE, id), result -> {
+            result.next();
+            return result.getInt("age");
+        });
     }
 
     @Override
     public void close() throws Exception {
         connection.close();
+        System.out.println("Connection closed. Bye!");
+    }
+
+    public String getMetaData() {
+        try {
+            return "Connected to: " + connection.getMetaData().getURL() + "\n" +
+                    "DB name: " + connection.getMetaData().getDatabaseProductName() + "\n" +
+                    "DB version: " + connection.getMetaData().getDatabaseProductVersion() + "\n" +
+                    "Driver: " + connection.getMetaData().getDriverName();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 }

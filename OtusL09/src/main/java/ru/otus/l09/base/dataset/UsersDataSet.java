@@ -1,12 +1,11 @@
-package ru.otus.l09.base;
+package ru.otus.l09.base.dataset;
 
 public class UsersDataSet extends DataSet {
-    private final long id;
     private final String name;
     private final int age;
 
     public UsersDataSet(long id, String name, int age) {
-        this.id = id;
+        super(id);
         this.name = name;
         this.age = age;
     }
@@ -15,19 +14,18 @@ public class UsersDataSet extends DataSet {
         return name;
     }
 
-    public long getId() {
-        return id;
-    }
-
     public int getAge() {
         return age;
+    }
+
+    public long getId() {
+        return super.getId();
     }
 
     @Override
     public String toString() {
         return "UsersDataSet{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", age=" + age +
                 '}';
     }
