@@ -1,6 +1,7 @@
 package ru.otus.l09;
 
 import ru.otus.l09.base.DBService;
+import ru.otus.l09.base.dataset.AnotherUsersDataSet;
 import ru.otus.l09.base.dataset.UsersDataSet;
 import ru.otus.l09.connection.ConnectionHelper;
 import ru.otus.l09.executor.Executor;
@@ -14,18 +15,16 @@ public class Main {
 
     private void run() throws Exception {
         try (DBService dbs = new DBService()) {
-            System.out.println(dbs.getMetaData() + "\n");
+            Connection connection = ConnectionHelper.getConnection();
             dbs.prepareTables();
             dbs.addUser("Somebody", 25);
-            System.out.println("User name: " + dbs.getUserName(1));
-            System.out.println("User age: " + dbs.getUserAge(1) + "\n");
-
-            Connection connection = ConnectionHelper.getConnection();
-            new Executor(connection, new DBService()).save(new UsersDataSet(1, "Anotherone", 30));
-            System.out.println("User name: " + dbs.getUserName(2));
-            System.out.println("User age: " + dbs.getUserAge(2) + "\n");
-
-            System.out.println(new Executor(connection, new DBService()).load(1, UsersDataSet.class));
+            new Executor(connection, dbs).save(new UsersDataSet(1, "NewUser", 30));
+            new Executor(connection, dbs).save(new AnotherUsersDataSet(1, "Anotherone", 64,
+                    "Some st. 666", "+9-666-999-18-57"));
+            UsersDataSet user1 = new Executor(connection, dbs).load(1, UsersDataSet.class);
+            System.out.println(user1);
+            AnotherUsersDataSet user2 = new Executor(connection, dbs).load(3, AnotherUsersDataSet.class);
+            System.out.println(user2);
 
             dbs.deleteTables();
         }

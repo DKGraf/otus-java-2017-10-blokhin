@@ -4,12 +4,14 @@ import ru.otus.l09.base.DBService;
 import ru.otus.l09.base.ResultHandler;
 import ru.otus.l09.base.dataset.DataSet;
 
+import javax.persistence.Column;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Executor {
     private final Connection connection;
@@ -40,26 +42,61 @@ public class Executor {
         }
     }
 
+
+    //Сохраняет пользователя в базу данных. Если в пришедшем классе содержатся
+    //поля, отличные от name и age, которые используются в базе, то такие поля иигнорируются
     public <T extends DataSet> void save(T user) throws IllegalAccessException, SQLException {
-        Field[] fields = user.getClass().getDeclaredFields();
-        String name = null;
-        int age = 0;
-        for (Field f :
-                fields) {
-            f.setAccessible(true);
-            String fieldName = f.getName();
-            if ("name".equals(fieldName)) {
-                name = f.get(user).toString();
-            } else if ("age".equals(fieldName)) {
-                age = Integer.parseInt(f.get(user).toString());
+        Map<String, String> columns = getColumns(user);
+        String name = "!User without name!";
+        int age = -1;
+        for (Map.Entry<String, String> entry :
+                columns.entrySet()) {
+            if (entry.getKey().equals("name")) {
+                name = entry.getValue();
+            } else if (entry.getKey().equals("age")) {
+                age = Integer.parseInt(entry.getValue());
             }
         }
         dbs.addUser(name, age);
     }
 
-    public <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    //Читает пользователя из базы данных. При инстанцировании класса используются поля
+    //name и age базы данных. Остальные поля класса никаким образом не инициализируются,
+    //что может вызвать проблемы при использовании такого класса.
+    public <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         String name = dbs.getUserName(id);
         int age = dbs.getUserAge(id);
-        return clazz.getConstructor(long.class, String.class, int.class).newInstance(id, name, age);
+        @SuppressWarnings("unchecked") T t = (T) Class.forName(clazz.getCanonicalName()).newInstance();
+        Field[] fields = t.getClass().getDeclaredFields();
+        for (Field f :
+                fields) {
+            f.setAccessible(true);
+            if (f.getName().equals("name")) {
+                f.set(t, name);
+            } else if (f.getName().equals("age")) {
+                f.set(t, age);
+            }
+        }
+        return t;
+    }
+
+    private Map<String, String> getColumns(Object user) throws IllegalAccessException {
+        Class clazz = user.getClass();
+        Map<String, String> columns = new HashMap<>();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field f :
+                fields) {
+            f.setAccessible(true);
+            Column column = f.getAnnotation(javax.persistence.Column.class);
+            if (column != null) {
+                String name = column.name();
+                if (name.length() == 0) {
+                    name = f.getName().toLowerCase();
+                }
+                String value = f.get(user).toString();
+                columns.put(name, value);
+            }
+        }
+        return columns;
     }
 }
