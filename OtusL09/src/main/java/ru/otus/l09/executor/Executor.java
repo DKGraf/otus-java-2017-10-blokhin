@@ -71,10 +71,13 @@ public class Executor {
         for (Field f :
                 fields) {
             f.setAccessible(true);
-            if (f.getName().equals("name")) {
-                f.set(t, name);
-            } else if (f.getName().equals("age")) {
-                f.set(t, age);
+            Column column = f.getAnnotation(javax.persistence.Column.class);
+            if (column != null) {
+                if (column.name().equals("name")) {
+                    f.set(t, name);
+                } else if (column.name().equals("age")) {
+                    f.set(t, age);
+                }
             }
         }
         return t;
