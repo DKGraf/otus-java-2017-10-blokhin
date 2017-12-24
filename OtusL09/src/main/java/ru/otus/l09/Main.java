@@ -17,16 +17,24 @@ public class Main {
         try (DBService dbs = new DBService()) {
             Connection connection = ConnectionHelper.getConnection();
             dbs.prepareTables();
-            dbs.addUser("Somebody", 25);
-            new Executor(connection, dbs).save(new UsersDataSet(1, "NewUser", 30));
-            new Executor(connection, dbs).save(new AnotherUsersDataSet(1, "Anotherone", 64,
-                    "Some st. 666", "+9-666-999-18-57"));
-            UsersDataSet user1 = new Executor(connection, dbs).load(1, UsersDataSet.class);
-            System.out.println(user1);
-            AnotherUsersDataSet user2 = new Executor(connection, dbs).load(3, AnotherUsersDataSet.class);
-            System.out.println(user2);
 
-            dbs.deleteTables();
+            UsersDataSet user1 = new UsersDataSet(1, "Somebody", 30);
+            AnotherUsersDataSet user2 = new AnotherUsersDataSet(1, "Anotherone",
+                    30, "Some st.", "+15-468-795-45-67");
+            new Executor(connection, dbs).save(user1, "users");
+            new Executor(connection, dbs).save(user2, "ausers");
+            new Executor(connection, dbs).load(1, AnotherUsersDataSet.class, "ausers");
+
+//            dbs.addUser("Somebody", 25);
+//            new Executor(connection, dbs).save(new UsersDataSet(1, "NewUser", 30));
+//            new Executor(connection, dbs).save(new AnotherUsersDataSet(1, "Anotherone", 64,
+//                    "Some st. 666", "+9-666-999-18-57"));
+//            UsersDataSet user1 = new Executor(connection, dbs).load(1, UsersDataSet.class);
+//            System.out.println(user1);
+//            AnotherUsersDataSet user2 = new Executor(connection, dbs).load(3, AnotherUsersDataSet.class);
+//            System.out.println(user2);
+
+//            dbs.deleteTables();
         }
     }
 }

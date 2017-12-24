@@ -14,7 +14,7 @@ public class AnotherUsersDataSet extends DataSet {
     private String name;
     @Column(name = "age")
     private int age;
-    @Column(name = "adress")
+    @Column(name = "address")
     private String address;
     @Column(name = "phone")
     private String phoneNumber;
@@ -53,14 +53,6 @@ public class AnotherUsersDataSet extends DataSet {
 
     public void setAge(int age) {
         this.age = age;
-    }
-
-    public long getId() {
-        return super.getId();
-    }
-
-    public void setId(long id) {
-        super.setId(id);
     }
 
     public String getAddress() {

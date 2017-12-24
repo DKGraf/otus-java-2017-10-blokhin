@@ -10,7 +10,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Executor {
@@ -42,44 +44,24 @@ public class Executor {
         }
     }
 
-
-    //Сохраняет пользователя в базу данных. Если в пришедшем классе содержатся
-    //поля, отличные от name и age, которые используются в базе, то такие поля иигнорируются
-    public <T extends DataSet> void save(T user) throws IllegalAccessException, SQLException {
+    public <T extends DataSet> void save(T user, String table) throws IllegalAccessException, SQLException {
         Map<String, String> columns = getColumns(user);
-        String name = "!User without name!";
-        int age = -1;
-        for (Map.Entry<String, String> entry :
-                columns.entrySet()) {
-            if (entry.getKey().equals("name")) {
-                name = entry.getValue();
-            } else if (entry.getKey().equals("age")) {
-                age = Integer.parseInt(entry.getValue());
-            }
-        }
-        dbs.addUser(name, age);
+        dbs.addUser(columns, table);
     }
 
-    //Читает пользователя из базы данных. При инстанцировании класса используются поля
-    //name и age базы данных. Остальные поля класса никаким образом не инициализируются,
-    //что может вызвать проблемы при использовании такого класса.
-    public <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        String name = dbs.getUserName(id);
-        int age = dbs.getUserAge(id);
+    public <T extends DataSet> T load(long id, Class<T> clazz, String table) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         @SuppressWarnings("unchecked") T t = (T) Class.forName(clazz.getCanonicalName()).newInstance();
+        List<String> columnsList = new ArrayList<>();
         Field[] fields = t.getClass().getDeclaredFields();
         for (Field f :
                 fields) {
             f.setAccessible(true);
             Column column = f.getAnnotation(javax.persistence.Column.class);
             if (column != null) {
-                if (column.name().equals("name")) {
-                    f.set(t, name);
-                } else if (column.name().equals("age")) {
-                    f.set(t, age);
-                }
+                columnsList.add(column.name());
             }
         }
+        dbs.getUserById(table, id, columnsList);
         return t;
     }
 

@@ -41,14 +41,6 @@ public class UsersDataSet extends DataSet {
         this.age = age;
     }
 
-    public long getId() {
-        return super.getId();
-    }
-
-    public void setId(long id) {
-        super.setId(id);
-    }
-
     @Override
     public String toString() {
         return "UsersDataSet{" +
