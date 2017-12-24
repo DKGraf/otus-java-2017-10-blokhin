@@ -52,6 +52,8 @@ public class Executor {
     public <T extends DataSet> T load(long id, Class<T> clazz, String table) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         @SuppressWarnings("unchecked") T t = (T) Class.forName(clazz.getCanonicalName()).newInstance();
         List<String> columnsList = new ArrayList<>();
+        List<String> userData = new ArrayList<>();
+        List<Field> annotatedFields = new ArrayList<>();
         Field[] fields = t.getClass().getDeclaredFields();
         for (Field f :
                 fields) {
@@ -59,9 +61,16 @@ public class Executor {
             Column column = f.getAnnotation(javax.persistence.Column.class);
             if (column != null) {
                 columnsList.add(column.name());
+                annotatedFields.add(f);
             }
         }
-        dbs.getUserById(table, id, columnsList);
+        userData = dbs.getUserById(table, id, columnsList);
+
+        for (int i = 0; i < annotatedFields.size(); i++) {
+            Field f = annotatedFields.get(i);
+            String s = userData.get(i);
+            f = FieldSetter.setField(f, s, t);
+        }
         return t;
     }
 

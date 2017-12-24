@@ -2,11 +2,11 @@ package ru.otus.l09.executor;
 
 import java.util.Map;
 
-public class SqlBuilder {
+public class SqlCreator {
     private Map<String, String> columns;
     private String table;
 
-    public SqlBuilder(Map<String, String> columns, String table) {
+    public SqlCreator(Map<String, String> columns, String table) {
         this.columns = columns;
         this.table = table;
     }

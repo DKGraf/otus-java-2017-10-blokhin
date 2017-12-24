@@ -1,11 +1,11 @@
 package ru.otus.l09.base;
 
 import ru.otus.l09.executor.Executor;
-import ru.otus.l09.executor.SqlBuilder;
+import ru.otus.l09.executor.SqlCreator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +41,8 @@ public class DBService implements AutoCloseable {
         try {
             Executor exec = new Executor(connection);
             connection.setAutoCommit(false);
-            SqlBuilder sqlBuilder = new SqlBuilder(columns, table);
-            String s = sqlBuilder.createSQL();
-            System.out.println(s);
+            SqlCreator sqlCreator = new SqlCreator(columns, table);
+            String s = sqlCreator.createSQL();
             exec.execUpdate(s);
             connection.commit();
         } catch (SQLException e) {
@@ -65,23 +64,26 @@ public class DBService implements AutoCloseable {
         exec.execUpdate(CREATE_TABLE_ANOTHER_USERS);
     }
 
-    public Map<String, String> getUserById(String table, long id, List<String> columnsList) throws SQLException {
+    public List<String> getUserById(String table, long id, List<String> columnsList) throws SQLException {
         Executor execT = new Executor(connection);
-        Map<String, String> user = new HashMap<>();
-
-
+        List<String> userData = new ArrayList<>();
 
         StringBuilder sb = new StringBuilder();
-        columnsList.forEach(sb.append(", ")::append);
+        columnsList.forEach((v) -> sb.append(", ")
+                .append(v));
         sb.deleteCharAt(0);
 
         String select = "select" + sb.toString() + " from " + table + " where id = " + id;
-        System.out.println(select);
         execT.execQuery(select, result -> {
-            System.out.println(result);
+            result.next();
+            int columnsCount = columnsList.size();
+            for (int i = 1; i <= columnsCount; i++) {
+                userData.add(result.getString(i));
+            }
             return result;
         });
-        return user;
+
+        return userData;
     }
 
     @Override
