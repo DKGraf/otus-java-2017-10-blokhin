@@ -1,12 +1,14 @@
 package ru.otus.l09;
 
-import ru.otus.l09.base.DBService;
+import ru.otus.l09.base.DBServiceImpl;
 import ru.otus.l09.base.dataset.AnotherUsersDataSet;
 import ru.otus.l09.base.dataset.UsersDataSet;
-import ru.otus.l09.connection.ConnectionHelper;
-import ru.otus.l09.executor.Executor;
+import ru.otus.l09.base.executor.Executor;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+
+import static ru.otus.l09.base.connection.ConnectionHelper.getConnection;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -14,23 +16,40 @@ public class Main {
     }
 
     private void run() throws Exception {
-        try (DBService dbs = new DBService()) {
-            Connection connection = ConnectionHelper.getConnection();
-            dbs.prepareTables();
+        try (Connection connection = getConnection()) {
+            Executor exec = new Executor(connection);
 
-            UsersDataSet user1 = new UsersDataSet(1, "Somebody", 30);
-            AnotherUsersDataSet user2 = new AnotherUsersDataSet(1, "Anotherone",
+            exec.execUpdate("create table if not exists users (" +
+                    "id bigserial not null primary key, " +
+                    "name varchar, " +
+                    "age integer)");
+            exec.execUpdate("create table if not exists ausers (" +
+                    "id bigserial not null primary key, " +
+                    "name varchar, " +
+                    "age integer, " +
+                    "address varchar, " +
+                    "phone varchar)");
+            DBServiceImpl dbs = new DBServiceImpl();
+
+            UsersDataSet user1 = new UsersDataSet(1, "Someone1", 32);
+            UsersDataSet user2 = new UsersDataSet(2, "Someone2", 64);
+            AnotherUsersDataSet user3 = new AnotherUsersDataSet(1, "Anotherone",
                     30, "Some st.", "+15-468-795-45-67");
-            new Executor(connection, dbs).save(user1, "users");
-            new Executor(connection, dbs).save(user2, "ausers");
+            dbs.save(user1, "users");
+            dbs.save(user2, "users");
+            dbs.save(user3, "ausers");
 
-            UsersDataSet user3 = new Executor(connection, dbs).load(1, UsersDataSet.class, "users");
-            AnotherUsersDataSet user4 = new Executor(connection, dbs).load(1, AnotherUsersDataSet.class, "ausers");
-
-            System.out.println(user3);
+            UsersDataSet user4 = dbs.load(1, UsersDataSet.class, "users");
+            UsersDataSet user5 = dbs.load(2, UsersDataSet.class, "users");
+            AnotherUsersDataSet user6 = dbs.load(1, AnotherUsersDataSet.class, "ausers");
             System.out.println(user4);
+            System.out.println(user5);
+            System.out.println(user6);
 
-            dbs.deleteTables();
+            exec.execUpdate("drop table users");
+            exec.execUpdate("drop table ausers");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

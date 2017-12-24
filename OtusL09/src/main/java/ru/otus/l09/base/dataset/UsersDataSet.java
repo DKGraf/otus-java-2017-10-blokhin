@@ -10,8 +10,10 @@ import javax.persistence.Entity;
 
 @Entity
 public class UsersDataSet extends DataSet {
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "age")
     private int age;
 

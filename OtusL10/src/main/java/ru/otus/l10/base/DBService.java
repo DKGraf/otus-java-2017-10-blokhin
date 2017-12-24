@@ -2,8 +2,12 @@ package ru.otus.l10.base;
 
 import ru.otus.l10.base.datasets.DataSet;
 
-public interface DBService {
-    <T extends DataSet> void save(T user);
+import java.sql.SQLException;
 
-    <T extends DataSet> T load(long id, Class<T> clazz);
+public interface DBService {
+    <T extends DataSet> void save(T user, String table) throws SQLException, IllegalAccessException;
+
+    <T extends DataSet> T load(long id, Class<T> clazz, String table) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException;
+
+    void shutdown();
 }

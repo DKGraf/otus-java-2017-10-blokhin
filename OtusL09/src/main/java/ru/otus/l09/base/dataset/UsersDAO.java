@@ -1,52 +1,65 @@
-package ru.otus.l09.executor;
+package ru.otus.l09.base.dataset;
 
-import ru.otus.l09.base.DBService;
-import ru.otus.l09.base.ResultHandler;
-import ru.otus.l09.base.dataset.DataSet;
+import ru.otus.l09.base.executor.Executor;
+import ru.otus.l09.base.executor.FieldSetter;
+import ru.otus.l09.base.executor.SqlCreator;
 
 import javax.persistence.Column;
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Executor {
+public class UsersDAO {
     private final Connection connection;
-    private DBService dbs;
 
-
-    public Executor(Connection connection) {
+    public UsersDAO(Connection connection) {
         this.connection = connection;
     }
 
-    public Executor(Connection connection, DBService dbs) {
-        this.connection = connection;
-        this.dbs = dbs;
-    }
-
-    public <T> T execQuery(String query, ResultHandler<T> handler) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute(query);
-            ResultSet result = stmt.getResultSet();
-            return handler.handle(result);
+    public void addUser(Map<String, String> columns, String table) throws SQLException {
+        try {
+            Executor exec = new Executor(connection);
+            connection.setAutoCommit(false);
+            SqlCreator sqlCreator = new SqlCreator(columns, table);
+            String s = sqlCreator.createSQL();
+            exec.execUpdate(s);
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 
-    public int execUpdate(String update) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute(update);
-            return stmt.getUpdateCount();
-        }
+    public List<String> getUserById(String table, long id, List<String> columnsList) throws SQLException {
+        Executor execT = new Executor(connection);
+        List<String> userData = new ArrayList<>();
+
+        StringBuilder sb = new StringBuilder();
+        columnsList.forEach((v) -> sb.append(", ")
+                .append(v));
+        sb.deleteCharAt(0);
+
+        String select = "select" + sb.toString() + " from " + table + " where id = " + id;
+        execT.execQuery(select, result -> {
+            result.next();
+            int columnsCount = columnsList.size();
+            for (int i = 1; i <= columnsCount; i++) {
+                userData.add(result.getString(i));
+            }
+            return result;
+        });
+
+        return userData;
     }
 
     public <T extends DataSet> void save(T user, String table) throws IllegalAccessException, SQLException {
         Map<String, String> columns = getColumns(user);
-        dbs.addUser(columns, table);
+        addUser(columns, table);
     }
 
     public <T extends DataSet> T load(long id, Class<T> clazz, String table) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
@@ -64,7 +77,7 @@ public class Executor {
                 annotatedFields.add(f);
             }
         }
-        userData = dbs.getUserById(table, id, columnsList);
+        userData = getUserById(table, id, columnsList);
 
         for (int i = 0; i < annotatedFields.size(); i++) {
             Field f = annotatedFields.get(i);

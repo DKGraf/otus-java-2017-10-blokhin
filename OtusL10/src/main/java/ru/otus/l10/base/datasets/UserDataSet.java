@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
-public class UserDataSet {
+public class UserDataSet extends DataSet {
 
     @Column(name = "name")
     private String name;
@@ -12,20 +12,20 @@ public class UserDataSet {
     @Column(name = "age")
     private int age;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private AddressDataSet address;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private PhoneDataSet phone;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    private AddressDataSet address;
+//
+//    @OneToMany(cascade = CascadeType.ALL)
+//    private PhoneDataSet phone;
 
     public UserDataSet() {
     }
 
-    public UserDataSet(String name, int age, AddressDataSet address, PhoneDataSet phone) {
+    public UserDataSet(String name, int age/*, AddressDataSet address, PhoneDataSet phone*/) {
         this.name = name;
         this.age = age;
-        this.address = address;
-        this.phone = phone;
+//        this.address = address;
+//        this.phone = phone;
     }
 
     public String getName() {
@@ -44,29 +44,29 @@ public class UserDataSet {
         this.age = age;
     }
 
-    public AddressDataSet getAddress() {
-        return address;
-    }
-
-    public void setAddress(AddressDataSet address) {
-        this.address = address;
-    }
-
-    public PhoneDataSet getPhone() {
-        return phone;
-    }
-
-    public void setPhone(PhoneDataSet phone) {
-        this.phone = phone;
-    }
+//    public AddressDataSet getAddress() {
+//        return address;
+//    }
+//
+//    public void setAddress(AddressDataSet address) {
+//        this.address = address;
+//    }
+//
+//    public PhoneDataSet getPhone() {
+//        return phone;
+//    }
+//
+//    public void setPhone(PhoneDataSet phone) {
+//        this.phone = phone;
+//    }
 
     @Override
     public String toString() {
         return "UserDataSet{" +
                 "name='" + name + '\'' +
-                ", age=" + age +
+                ", age=" + age;/* +
                 ", address=" + address +
                 ", phone=" + phone +
-                '}';
+                '}';*/
     }
 }

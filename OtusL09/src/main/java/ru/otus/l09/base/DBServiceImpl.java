@@ -1,12 +1,12 @@
-package ru.otus.l10.base;
+package ru.otus.l09.base;
 
-import ru.otus.l10.base.datasets.DataSet;
-import ru.otus.l10.base.datasets.UsersDAO;
+import ru.otus.l09.base.dataset.DataSet;
+import ru.otus.l09.base.dataset.UsersDAO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static ru.otus.l09.connection.ConnectionHelper.getConnection;
+import static ru.otus.l09.base.connection.ConnectionHelper.getConnection;
 
 public class DBServiceImpl implements DBService {
     private final Connection connection;
