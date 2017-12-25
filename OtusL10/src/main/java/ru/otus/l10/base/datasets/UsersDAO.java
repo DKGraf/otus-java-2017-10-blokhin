@@ -1,8 +1,10 @@
 package ru.otus.l10.base.datasets;
 
 import ru.otus.l10.base.executor.Executor;
+import ru.otus.l10.base.executor.FieldSetter;
 
 import javax.persistence.Column;
+import javax.persistence.Table;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,14 +13,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.otus.l10.base.connection.ConnectionHelper.getConnection;
+
 public class UsersDAO {
     private final Connection connection;
+
+    public UsersDAO() {
+        connection = getConnection();
+    }
 
     public UsersDAO(Connection connection) {
         this.connection = connection;
     }
 
-    public void addUser(Map<String, String> columns, String table) throws SQLException {
+    private void addUser(Map<String, String> columns, String table) throws SQLException {
         try {
             Executor exec = new Executor(connection);
             connection.setAutoCommit(false);
@@ -33,7 +41,7 @@ public class UsersDAO {
         }
     }
 
-    public List<String> getUserById(String table, long id, List<String> columnsList) throws SQLException {
+    private List<String> getUserById(String table, long id, List<String> columnsList) throws SQLException {
         Executor execT = new Executor(connection);
         List<String> userData = new ArrayList<>();
 
@@ -55,16 +63,21 @@ public class UsersDAO {
         return userData;
     }
 
-    public <T extends DataSet> void save(T user, String table) throws IllegalAccessException, SQLException {
+    public <T extends DataSet> void save(T user) throws IllegalAccessException, SQLException {
         Map<String, String> columns = getColumns(user);
+        Table tableName = user.getClass().getAnnotation(javax.persistence.Table.class);
+        String table = tableName.name();
         addUser(columns, table);
     }
 
-    public <T extends DataSet> T load(long id, Class<T> clazz, String table) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         @SuppressWarnings("unchecked") T t = (T) Class.forName(clazz.getCanonicalName()).newInstance();
         List<String> columnsList = new ArrayList<>();
-        List<String> userData = new ArrayList<>();
+        List<String> userData;
         List<Field> annotatedFields = new ArrayList<>();
+        Table tableName = clazz.getAnnotation(javax.persistence.Table.class);
+        String table = tableName.name();
+
         Field[] fields = t.getClass().getDeclaredFields();
         for (Field f :
                 fields) {
@@ -75,12 +88,12 @@ public class UsersDAO {
                 annotatedFields.add(f);
             }
         }
-        userData = getUserById(table, id, columnsList);
 
+        userData = getUserById(table, id, columnsList);
         for (int i = 0; i < annotatedFields.size(); i++) {
             Field f = annotatedFields.get(i);
             String s = userData.get(i);
-            f = ru.otus.l09.executor.FieldSetter.setField(f, s, t);
+            f = FieldSetter.setField(f, s, t);
         }
         return t;
     }
@@ -89,6 +102,7 @@ public class UsersDAO {
         Class clazz = user.getClass();
         Map<String, String> columns = new HashMap<>();
         Field[] fields = clazz.getDeclaredFields();
+
         for (Field f :
                 fields) {
             f.setAccessible(true);
@@ -102,6 +116,7 @@ public class UsersDAO {
                 columns.put(name, value);
             }
         }
+
         return columns;
     }
 }

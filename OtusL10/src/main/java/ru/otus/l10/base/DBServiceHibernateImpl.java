@@ -1,19 +1,57 @@
 package ru.otus.l10.base;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import ru.otus.l10.base.datasets.AddressDataSet;
 import ru.otus.l10.base.datasets.DataSet;
-
-import java.sql.SQLException;
+import ru.otus.l10.base.datasets.PhoneDataSet;
+import ru.otus.l10.base.datasets.UserDataSet;
 
 public class DBServiceHibernateImpl implements DBService {
+    private final SessionFactory sessionFactory;
 
-    @Override
-    public <T extends DataSet> void save(T user, String table) throws SQLException, IllegalAccessException {
+    DBServiceHibernateImpl() {
+        Configuration configuration = new Configuration();
 
+        configuration.addAnnotatedClass(UserDataSet.class);
+        configuration.addAnnotatedClass(AddressDataSet.class);
+        configuration.addAnnotatedClass(PhoneDataSet.class);
+
+        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        configuration.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
+        configuration.setProperty("hibernate.connection.username", "dkgraf");
+        configuration.setProperty("hibernate.connection.password", "dkgraf");
+        configuration.setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/otusl10");
+        configuration.setProperty("hibernate.show_sql", "true");
+        configuration.setProperty("hibernate.hbm2ddl.auto", "create");
+
+        sessionFactory = createSessionFactory(configuration);
+    }
+
+    private static SessionFactory createSessionFactory(Configuration configuration) {
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
+        builder.applySettings(configuration.getProperties());
+        ServiceRegistry registry = builder.build();
+        return configuration.buildSessionFactory(registry);
     }
 
     @Override
-    public <T extends DataSet> T load(long id, Class<T> clazz, String table) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
-        return null;
+    public <T extends DataSet> void save(T user) {
+        try (Session session = sessionFactory.openSession()) {
+            session.save(user);
+        }
+    }
+
+    @Override
+    public <T extends DataSet> T load(long id, Class<T> clazz) {
+        T t;
+        try (Session session = sessionFactory.openSession()) {
+            t = session.load(clazz, id);
+        }
+        return t;
     }
 
     @Override

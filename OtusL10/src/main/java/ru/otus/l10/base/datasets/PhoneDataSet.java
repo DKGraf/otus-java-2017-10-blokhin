@@ -1,15 +1,16 @@
 package ru.otus.l10.base.datasets;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "phone")
-public class PhoneDataSet {
+@Table(name = "phones")
+public class PhoneDataSet extends DataSet {
 
-    @Column(name = "number")
+    @Column(name = "phonenumber")
     private String number;
+
+    @ManyToOne
+    private UserDataSet user;
 
     public PhoneDataSet() {
     }
@@ -26,10 +27,19 @@ public class PhoneDataSet {
         this.number = number;
     }
 
+    public UserDataSet getUser() {
+        return user;
+    }
+
+    public void setUser(UserDataSet user) {
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "PhoneDataSet{" +
                 "number='" + number + '\'' +
+                ", user=" + user +
                 '}';
     }
 }
