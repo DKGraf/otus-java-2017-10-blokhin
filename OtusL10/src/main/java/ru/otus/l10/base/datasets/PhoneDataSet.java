@@ -1,6 +1,7 @@
 package ru.otus.l10.base.datasets;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "phones")
@@ -41,5 +42,18 @@ public class PhoneDataSet extends DataSet {
                 "number='" + number + '\'' +
                 ", user=" + user +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PhoneDataSet)) return false;
+        PhoneDataSet that = (PhoneDataSet) o;
+        return Objects.equals(getNumber(), that.getNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getNumber());
     }
 }

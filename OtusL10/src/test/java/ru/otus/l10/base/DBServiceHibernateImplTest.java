@@ -31,16 +31,16 @@ class DBServiceHibernateImplTest {
         DBServiceHibernateImpl dbsh = new DBServiceHibernateImpl();
         dbsh.save(user1);
         dbsh.save(user2);
-        UserDataSet user3 = dbsh.load(1, UserDataSet.class);
-        UserDataSet user4 = dbsh.load(2, UserDataSet.class);
+        UserDataSet user3 = dbsh.load(1);
+        UserDataSet user4 = dbsh.load(2);
 
         assertEquals(user1.getName(), user3.getName());
         assertEquals(user1.getAge(), user3.getAge());
-        assertEquals(user1.getAddress(), user3.getAddress());
+        assertEquals(user1.getAddress().getAddress(), user3.getAddress().getAddress());
         assertIterableEquals(user1.getPhones(), user3.getPhones());
         assertEquals(user2.getName(), user4.getName());
         assertEquals(user2.getAge(), user4.getAge());
-        assertEquals(user2.getAddress(), user4.getAddress());
+        assertEquals(user2.getAddress().getAddress(), user4.getAddress().getAddress());
         assertIterableEquals(user2.getPhones(), user4.getPhones());
     }
 }

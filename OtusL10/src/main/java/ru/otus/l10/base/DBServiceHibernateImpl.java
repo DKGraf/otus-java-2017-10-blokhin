@@ -5,10 +5,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import ru.otus.l10.base.datasets.AddressDataSet;
-import ru.otus.l10.base.datasets.DataSet;
-import ru.otus.l10.base.datasets.PhoneDataSet;
-import ru.otus.l10.base.datasets.UserDataSet;
+import ru.otus.l10.base.datasets.*;
 
 public class DBServiceHibernateImpl implements DBService {
     private final SessionFactory sessionFactory;
@@ -39,23 +36,23 @@ public class DBServiceHibernateImpl implements DBService {
     }
 
     @Override
-    public <T extends DataSet> void save(T user) {
+    public void save(UserDataSet user) {
         try (Session session = sessionFactory.openSession()) {
             session.save(user);
         }
     }
 
     @Override
-    public <T extends DataSet> T load(long id, Class<T> clazz) {
-        T t;
-        try (Session session = sessionFactory.openSession()) {
-            t = session.load(clazz, id);
-        }
-        return t;
+    public UserDataSet load(long id) {
+        return sessionFactory.openSession().get(UserDataSet.class, id);
     }
 
     @Override
     public void shutdown() {
+        sessionFactory.close();
+    }
 
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 }

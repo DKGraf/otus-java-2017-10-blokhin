@@ -16,7 +16,7 @@ public class UserDataSet extends DataSet {
     @OneToOne(cascade = CascadeType.ALL)
     private AddressDataSet address;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<PhoneDataSet> phones;
 
     public UserDataSet() {
@@ -64,10 +64,21 @@ public class UserDataSet extends DataSet {
     @Override
     public String toString() {
         return "UserDataSet{" +
-                "name='" + name + '\'' +
-                ", age=" + age +
-                ", address=" + address +
-                ", phones=" + phones +
+                "name = '" + name + '\'' +
+                ", age = " + age +
+                ", address = '" + getAddress().getAddress() +
+                "', phones =" + phoneNumbers() +
                 '}';
+    }
+
+    private String phoneNumbers() {
+        StringBuilder numbers = new StringBuilder();
+        for (PhoneDataSet pds :
+                phones) {
+            numbers.append(", ")
+                    .append(pds.getNumber());
+        }
+        numbers.deleteCharAt(0);
+        return numbers.toString();
     }
 }

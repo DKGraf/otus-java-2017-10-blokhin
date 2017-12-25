@@ -1,11 +1,11 @@
 package ru.otus.l10.base;
 
-import ru.otus.l10.base.datasets.DataSet;
+import ru.otus.l10.base.datasets.UserDataSet;
 
 public interface DBService {
-    <T extends DataSet> void save(T user);
+    void save(UserDataSet user);
 
-    <T extends DataSet> T load(long id, Class<T> clazz);
+    UserDataSet load(long id);
 
     void shutdown();
 }

@@ -1,6 +1,6 @@
 package ru.otus.l10.base;
 
-import ru.otus.l10.base.datasets.DataSet;
+import ru.otus.l10.base.datasets.UserDataSet;
 import ru.otus.l10.base.datasets.UsersDAO;
 
 import java.sql.Connection;
@@ -17,7 +17,7 @@ public class DBServiceImpl implements DBService {
         this.usersDAO = new UsersDAO(connection);
     }
 
-    public <T extends DataSet> void save(T user) {
+    public void save(UserDataSet user) {
         try {
             usersDAO.save(user);
         } catch (IllegalAccessException | SQLException e) {
@@ -25,14 +25,14 @@ public class DBServiceImpl implements DBService {
         }
     }
 
-    public <T extends DataSet> T load(long id, Class<T> clazz) {
-        T t = null;
+    public UserDataSet load(long id) {
+        UserDataSet user = null;
         try {
-            t = usersDAO.load(id, clazz);
+            user = usersDAO.load(id);
         } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
         }
-        return t;
+        return user;
     }
 
     @Override

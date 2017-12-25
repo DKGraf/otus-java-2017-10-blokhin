@@ -70,12 +70,12 @@ public class UsersDAO {
         addUser(columns, table);
     }
 
-    public <T extends DataSet> T load(long id, Class<T> clazz) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        @SuppressWarnings("unchecked") T t = (T) Class.forName(clazz.getCanonicalName()).newInstance();
+    public <T extends DataSet> T load(long id) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+        @SuppressWarnings("unchecked") T t = (T) Class.forName(UserDataSet.class.getCanonicalName()).newInstance();
         List<String> columnsList = new ArrayList<>();
         List<String> userData;
         List<Field> annotatedFields = new ArrayList<>();
-        Table tableName = clazz.getAnnotation(javax.persistence.Table.class);
+        Table tableName = UserDataSet.class.getAnnotation(javax.persistence.Table.class);
         String table = tableName.name();
 
         Field[] fields = t.getClass().getDeclaredFields();
@@ -93,7 +93,7 @@ public class UsersDAO {
         for (int i = 0; i < annotatedFields.size(); i++) {
             Field f = annotatedFields.get(i);
             String s = userData.get(i);
-            f = FieldSetter.setField(f, s, t);
+            FieldSetter.setField(f, s, t);
         }
         return t;
     }

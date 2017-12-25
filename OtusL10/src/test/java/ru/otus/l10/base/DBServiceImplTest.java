@@ -14,7 +14,6 @@ import java.util.List;
 import static ru.otus.l10.base.connection.ConnectionHelper.getConnection;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 class DBServiceImplTest {
 
     @Test
@@ -41,15 +40,17 @@ class DBServiceImplTest {
             DBServiceImpl dbs = new DBServiceImpl();
             dbs.save(user1);
             dbs.save(user2);
-            UserDataSet user3 = dbs.load(1, UserDataSet.class);
-            UserDataSet user4 = dbs.load(2, UserDataSet.class);
+            UserDataSet user3 = dbs.load(1);
+            UserDataSet user4 = dbs.load(2);
 
             assertEquals(user1.getName(), user3.getName());
             assertEquals(user1.getAge(), user3.getAge());
             assertEquals(user2.getName(), user4.getName());
             assertEquals(user2.getAge(), user4.getAge());
 
-            exec.execUpdate("drop table users cascade");
+            exec.execUpdate("drop table if exists users cascade");
+            exec.execUpdate("drop table if exists addresses cascade");
+            exec.execUpdate("drop table if exists phones cascade");
         } catch (SQLException e) {
             e.printStackTrace();
         }
