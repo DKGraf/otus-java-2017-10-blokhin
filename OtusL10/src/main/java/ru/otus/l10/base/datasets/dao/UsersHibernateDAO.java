@@ -1,6 +1,7 @@
-package ru.otus.l10.base.datasets;
+package ru.otus.l10.base.datasets.dao;
 
 import org.hibernate.Session;
+import ru.otus.l10.base.datasets.UserDataSet;
 
 public class UsersHibernateDAO {
     private final Session session;

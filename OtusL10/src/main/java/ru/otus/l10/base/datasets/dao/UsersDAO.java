@@ -1,6 +1,9 @@
-package ru.otus.l10.base.datasets;
+package ru.otus.l10.base.datasets.dao;
 
+import ru.otus.l10.base.datasets.DataSet;
+import ru.otus.l10.base.datasets.UserDataSet;
 import ru.otus.l10.base.executor.Executor;
+import ru.otus.l10.base.executor.SqlCreator;
 import ru.otus.l10.base.executor.FieldSetter;
 
 import javax.persistence.Column;
@@ -30,7 +33,7 @@ public class UsersDAO {
         try {
             Executor exec = new Executor(connection);
             connection.setAutoCommit(false);
-            ru.otus.l09.executor.SqlCreator sqlCreator = new ru.otus.l09.executor.SqlCreator(columns, table);
+            SqlCreator sqlCreator = new SqlCreator(columns, table);
             String s = sqlCreator.createSQL();
             exec.execUpdate(s);
             connection.commit();

@@ -1,7 +1,7 @@
 package ru.otus.l10.base;
 
 import ru.otus.l10.base.datasets.UserDataSet;
-import ru.otus.l10.base.datasets.UsersDAO;
+import ru.otus.l10.base.datasets.dao.UsersDAO;
 
 import java.sql.Connection;
 import java.sql.SQLException;

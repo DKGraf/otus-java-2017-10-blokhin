@@ -1,4 +1,4 @@
-package ru.otus.l09.executor;
+package ru.otus.l10.base.executor;
 
 import java.util.Map;
 

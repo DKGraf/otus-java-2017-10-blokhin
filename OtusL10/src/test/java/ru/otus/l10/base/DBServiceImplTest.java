@@ -20,10 +20,14 @@ class DBServiceImplTest {
     void dbServiceTest() {
         try (Connection connection = getConnection()) {
             Executor exec = new Executor(connection);
+            exec.execUpdate("create table if not exists addresses (" +
+                    "id bigserial not null primary key, " +
+                    "address varchar)");
             exec.execUpdate("create table if not exists users (" +
                     "id bigserial not null primary key, " +
                     "name varchar, " +
-                    "age integer)");
+                    "age integer, " +
+                    "address_id integer references addresses (id))");
             List<PhoneDataSet> user1Phones = new ArrayList<>();
             List<PhoneDataSet> user2Phones = new ArrayList<>();
             PhoneDataSet phone1 = new PhoneDataSet("+7-985-678-94-52");
