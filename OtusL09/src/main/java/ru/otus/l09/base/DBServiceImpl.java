@@ -1,7 +1,7 @@
 package ru.otus.l09.base;
 
-import ru.otus.l09.base.dataset.DataSet;
-import ru.otus.l09.base.dataset.UsersDAO;
+import ru.otus.l09.base.datasets.UserDataSet;
+import ru.otus.l09.base.datasets.dao.UsersDAO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,18 +12,27 @@ public class DBServiceImpl implements DBService {
     private final Connection connection;
     private final UsersDAO usersDAO;
 
-    public DBServiceImpl() {
+    DBServiceImpl() {
         this.connection = getConnection();
         this.usersDAO = new UsersDAO(connection);
     }
 
-    public <T extends DataSet> void save(T user, String table) throws SQLException, IllegalAccessException {
-        usersDAO.save(user, table);
+    public void save(UserDataSet user) {
+        try {
+            usersDAO.save(user);
+        } catch (IllegalAccessException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public <T extends DataSet> T load(long id, Class<T> clazz, String table) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
-        T t = usersDAO.load(id, clazz, table);
-        return t;
+    public UserDataSet load(long id) {
+        UserDataSet user = null;
+        try {
+            user = usersDAO.load(id);
+        } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
     @Override

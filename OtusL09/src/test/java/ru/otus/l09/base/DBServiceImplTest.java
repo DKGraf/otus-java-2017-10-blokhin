@@ -1,18 +1,18 @@
-package ru.otus.l10.base;
+package ru.otus.l09.base;
 
 import org.junit.jupiter.api.Test;
-import ru.otus.l10.base.datasets.AddressDataSet;
-import ru.otus.l10.base.datasets.PhoneDataSet;
-import ru.otus.l10.base.datasets.UserDataSet;
-import ru.otus.l10.base.executor.Executor;
+import ru.otus.l09.base.datasets.AddressDataSet;
+import ru.otus.l09.base.datasets.PhoneDataSet;
+import ru.otus.l09.base.datasets.UserDataSet;
+import ru.otus.l09.base.executor.Executor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.otus.l10.base.connection.ConnectionHelper.getConnection;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static ru.otus.l09.base.connection.ConnectionHelper.getConnection;
 
 class DBServiceImplTest {
 
@@ -22,12 +22,16 @@ class DBServiceImplTest {
             Executor exec = new Executor(connection);
             exec.execUpdate("create table if not exists addresses (" +
                     "id bigserial not null primary key, " +
-                    "address varchar)");
+                    "address varchar);");
             exec.execUpdate("create table if not exists users (" +
                     "id bigserial not null primary key, " +
                     "name varchar, " +
                     "age integer, " +
-                    "address_id integer references addresses (id))");
+                    "address_id integer references addresses (id));");
+            exec.execUpdate("create table if not exists phones (" +
+                    "id bigserial not null primary key, " +
+                    "phonenumber varchar, " +
+                    "user_id integer references users (id));");
             List<PhoneDataSet> user1Phones = new ArrayList<>();
             List<PhoneDataSet> user2Phones = new ArrayList<>();
             PhoneDataSet phone1 = new PhoneDataSet("+7-985-678-94-52");
@@ -49,8 +53,10 @@ class DBServiceImplTest {
 
             assertEquals(user1.getName(), user3.getName());
             assertEquals(user1.getAge(), user3.getAge());
+            assertEquals(user1.getAddress().getAddress(), user3.getAddress().getAddress());
             assertEquals(user2.getName(), user4.getName());
             assertEquals(user2.getAge(), user4.getAge());
+            assertEquals(user2.getAddress().getAddress(), user4.getAddress().getAddress());
 
             exec.execUpdate("drop table if exists users cascade");
             exec.execUpdate("drop table if exists addresses cascade");

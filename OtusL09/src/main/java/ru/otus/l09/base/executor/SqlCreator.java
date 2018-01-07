@@ -33,6 +33,6 @@ public class SqlCreator {
         sbValue.append(")");
 
         return "insert into " + table + " " + sbName.toString() +
-                " values " + sbValue.toString();
+                " values " + sbValue.toString() + " returning id;";
     }
 }
