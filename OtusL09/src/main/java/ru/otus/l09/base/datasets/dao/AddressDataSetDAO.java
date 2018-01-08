@@ -1,6 +1,6 @@
 package ru.otus.l09.base.datasets.dao;
 
-import ru.otus.l09.base.datasets.UserDataSet;
+import ru.otus.l09.base.datasets.AddressDataSet;
 import ru.otus.l09.base.executor.FieldSetter;
 
 import javax.persistence.Table;
@@ -12,33 +12,32 @@ import java.util.Map;
 
 import static ru.otus.l09.base.connection.ConnectionHelper.getConnection;
 
-public class UsersDAO extends BaseDAO {
-    public UsersDAO() {
+public class AddressDataSetDAO extends BaseDAO {
+    public AddressDataSetDAO() {
         super.connection = getConnection();
     }
 
-    public UsersDAO(Connection connection) {
+    public AddressDataSetDAO(Connection connection) {
         super.connection = connection;
     }
 
+    @Override
     public <T> T load(long id) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        @SuppressWarnings("unchecked") T t = (T) Class.forName(UserDataSet.class.getCanonicalName()).newInstance();
-        List<String> userData;
-        Table tableName = UserDataSet.class.getAnnotation(javax.persistence.Table.class);
-        Field[] fields = UserDataSet.class.getDeclaredFields();
+        @SuppressWarnings("unchecked") T t = (T) Class.forName(AddressDataSet.class.getCanonicalName()).newInstance();
+        List<String> data;
+        Table tableName = AddressDataSet.class.getAnnotation(javax.persistence.Table.class);
+        Field[] fields = AddressDataSet.class.getDeclaredFields();
         String table = tableName.name();
         Map<Field, String> fieldsAndColumns = getFieldsAndColumns(fields);
-        userData = getById(table, id, fieldsAndColumns);
+        data = getById(table, id, fieldsAndColumns);
 
         int index = 0;
         for (Map.Entry<Field, String> entry:
-             fieldsAndColumns.entrySet()) {
-            String value = userData.get(index);
+                fieldsAndColumns.entrySet()) {
+            String value = data.get(index);
             FieldSetter.setField(entry.getKey(), value, t);
             index++;
         }
-
         return t;
     }
-
 }

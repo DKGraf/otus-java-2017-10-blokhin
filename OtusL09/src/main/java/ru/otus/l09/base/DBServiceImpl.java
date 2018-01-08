@@ -20,7 +20,7 @@ public class DBServiceImpl implements DBService {
     public void save(UserDataSet user) {
         try {
             usersDAO.save(user);
-        } catch (IllegalAccessException | SQLException e) {
+        } catch (IllegalAccessException | SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -29,6 +29,16 @@ public class DBServiceImpl implements DBService {
         UserDataSet user = null;
         try {
             user = usersDAO.load(id);
+        } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public UserDataSet load(long id, Class clazz) {
+        UserDataSet user = null;
+        try {
+            user = usersDAO.load(id, clazz);
         } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
         }

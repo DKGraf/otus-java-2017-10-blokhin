@@ -1,6 +1,12 @@
 package ru.otus.l09.base.executor;
 
+import ru.otus.l09.base.datasets.AddressDataSet;
+import ru.otus.l09.base.datasets.dao.AddressDataSetDAO;
+import ru.otus.l09.base.datasets.PhoneDataSet;
+import ru.otus.l09.base.datasets.dao.PhoneDataSetDAO;
+
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 
 public class FieldSetter {
 
@@ -45,6 +51,26 @@ public class FieldSetter {
             }
             case "java.lang.string": {
                 field.set(obj, value);
+                break;
+            }
+            case "ru.otus.l09.base.datasets.addressdataset": {
+                try {
+                    AddressDataSet address = new AddressDataSetDAO().load(Long.parseLong(value), AddressDataSet.class);
+                    field.set(obj, address);
+                    break;
+                } catch (SQLException | ClassNotFoundException | InstantiationException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case "ru.otus.l09.base.datasets.phonedataset": {
+                try {
+                    PhoneDataSet phone = new PhoneDataSetDAO().load(Long.parseLong(value), PhoneDataSet.class);
+                    field.set(obj, phone);
+                    break;
+                } catch (SQLException | ClassNotFoundException | InstantiationException e) {
+                    e.printStackTrace();
+                }
                 break;
             }
         }
