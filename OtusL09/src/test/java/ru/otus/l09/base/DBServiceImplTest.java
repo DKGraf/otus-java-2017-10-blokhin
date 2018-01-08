@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static ru.otus.l09.base.connection.ConnectionHelper.getConnection;
 
 class DBServiceImplTest {
@@ -54,13 +55,15 @@ class DBServiceImplTest {
             assertEquals(user1.getName(), user3.getName());
             assertEquals(user1.getAge(), user3.getAge());
             assertEquals(user1.getAddress().getAddress(), user3.getAddress().getAddress());
+            assertIterableEquals(user1.getPhones(), user3.getPhones());
             assertEquals(user2.getName(), user4.getName());
             assertEquals(user2.getAge(), user4.getAge());
             assertEquals(user2.getAddress().getAddress(), user4.getAddress().getAddress());
+            assertIterableEquals(user2.getPhones(), user4.getPhones());
 
-//            exec.execUpdate("drop table if exists users cascade");
-//            exec.execUpdate("drop table if exists addresses cascade");
-//            exec.execUpdate("drop table if exists phones cascade");
+            exec.execUpdate("drop table if exists users cascade");
+            exec.execUpdate("drop table if exists addresses cascade");
+            exec.execUpdate("drop table if exists phones cascade");
         } catch (SQLException e) {
             e.printStackTrace();
         }

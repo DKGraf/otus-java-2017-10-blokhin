@@ -1,6 +1,5 @@
 package ru.otus.l09.base.datasets.dao;
 
-import ru.otus.l09.base.datasets.AddressDataSet;
 import ru.otus.l09.base.executor.FieldSetter;
 
 import javax.persistence.Table;
@@ -22,22 +21,23 @@ public class AddressDataSetDAO extends BaseDAO {
     }
 
     @Override
-    public <T> T load(long id) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        @SuppressWarnings("unchecked") T t = (T) Class.forName(AddressDataSet.class.getCanonicalName()).newInstance();
-        List<String> data;
-        Table tableName = AddressDataSet.class.getAnnotation(javax.persistence.Table.class);
-        Field[] fields = AddressDataSet.class.getDeclaredFields();
+    public <T> T load(long id, Class clazz) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+        @SuppressWarnings("unchecked") T t = (T) Class.forName(clazz.getCanonicalName()).newInstance();
+        List<String> userData;
+        Table tableName = (Table) clazz.getAnnotation(Table.class);
+        Field[] fields = clazz.getDeclaredFields();
         String table = tableName.name();
         Map<Field, String> fieldsAndColumns = getFieldsAndColumns(fields);
-        data = getById(table, id, fieldsAndColumns);
+        userData = getByID(table, id, fieldsAndColumns);
 
         int index = 0;
-        for (Map.Entry<Field, String> entry:
+        for (Map.Entry<Field, String> entry :
                 fieldsAndColumns.entrySet()) {
-            String value = data.get(index);
+            String value = userData.get(index);
             FieldSetter.setField(entry.getKey(), value, t);
             index++;
         }
+
         return t;
     }
 }

@@ -1,12 +1,12 @@
 package ru.otus.l09.base.executor;
 
 import ru.otus.l09.base.datasets.AddressDataSet;
-import ru.otus.l09.base.datasets.dao.AddressDataSetDAO;
 import ru.otus.l09.base.datasets.PhoneDataSet;
-import ru.otus.l09.base.datasets.dao.PhoneDataSetDAO;
+import ru.otus.l09.base.datasets.dao.AddressDataSetDAO;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.List;
 
 public class FieldSetter {
 
@@ -63,17 +63,12 @@ public class FieldSetter {
                 }
                 break;
             }
-            case "ru.otus.l09.base.datasets.phonedataset": {
-                try {
-                    PhoneDataSet phone = new PhoneDataSetDAO().load(Long.parseLong(value), PhoneDataSet.class);
-                    field.set(obj, phone);
-                    break;
-                } catch (SQLException | ClassNotFoundException | InstantiationException e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
         }
+        return field;
+    }
+
+    public static Field setOTM(Field field, List<PhoneDataSet> value, Object obj) throws IllegalAccessException {
+        field.set(obj, value);
         return field;
     }
 }

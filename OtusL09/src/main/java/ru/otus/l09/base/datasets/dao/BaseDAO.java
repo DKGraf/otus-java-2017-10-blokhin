@@ -1,9 +1,11 @@
 package ru.otus.l09.base.datasets.dao;
 
-import ru.otus.l09.base.executor.FieldSetter;
 import ru.otus.l09.base.executor.SqlCreator;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.sql.Connection;
@@ -16,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class BaseDAO {
+    @SuppressWarnings("WeakerAccess")
     protected Connection connection;
 
     public <T> void save(T t) throws IllegalAccessException, SQLException, ClassNotFoundException {
         Map<String, String> columns = getColumns(t);
-        Table tableName = t.getClass().getAnnotation(javax.persistence.Table.class);
-        String table = tableName.name();
-        long id = saveToDB(columns, table);
+        String tableName = t.getClass().getAnnotation(javax.persistence.Table.class).name();
+        long id = saveToDB(columns, tableName);
         for (Map.Entry<String, String> entry :
                 columns.entrySet()) {
             if (entry.getKey().endsWith("_otm")) {
@@ -31,26 +33,58 @@ public abstract class BaseDAO {
         }
     }
 
-    public abstract <T> T load(long id) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException;
+    public abstract <T> T load(long id, Class clazz) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException;
 
-    public <T> T load(long id, Class clazz) throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        @SuppressWarnings("unchecked") T t = (T) Class.forName(clazz.getCanonicalName()).newInstance();
-        List<String> userData;
-        Table tableName = (Table) clazz.getAnnotation(Table.class);
-        Field[] fields = clazz.getDeclaredFields();
-        String table = tableName.name();
-        Map<Field, String> fieldsAndColumns = getFieldsAndColumns(fields);
-        userData = getById(table, id, fieldsAndColumns);
-
-        int index = 0;
+    @SuppressWarnings("WeakerAccess")
+    protected List<String> getByID(String table, long id, Map<Field, String> fieldsAndColumns) throws SQLException {
+        List<String> data = new ArrayList<>();
+        int dataSize = 0;
+        StringBuilder sb = new StringBuilder();
         for (Map.Entry<Field, String> entry :
                 fieldsAndColumns.entrySet()) {
-            String value = userData.get(index);
-            FieldSetter.setField(entry.getKey(), value, t);
-            index++;
+            String value = entry.getValue();
+            if (!value.endsWith("_otm")) {
+                sb.append(", ")
+                        .append(value);
+                dataSize++;
+            }
+        }
+        sb.deleteCharAt(0);
+
+        String select = "select" + sb.toString() + " from " + table + " where id = ?";
+        PreparedStatement stm = connection.prepareStatement(select);
+        stm.setLong(1, id);
+        ResultSet result = stm.executeQuery();
+        result.next();
+        for (int i = 1; i <= dataSize; i++) {
+            data.add(result.getString(i));
         }
 
-        return t;
+        return data;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected Map<Field, String> getFieldsAndColumns(Field[] fields) {
+        Map<Field, String> fieldsAndColumns = new HashMap<>();
+        for (Field f :
+                fields) {
+            f.setAccessible(true);
+            Column column = f.getAnnotation(javax.persistence.Column.class);
+            OneToOne oto = f.getAnnotation(javax.persistence.OneToOne.class);
+            OneToMany otm = f.getAnnotation(javax.persistence.OneToMany.class);
+            if (column != null) {
+                fieldsAndColumns.put(f, column.name());
+            } else if (oto != null) {
+                String name = f.getName().toLowerCase();
+                String idName = name + "_id";
+                fieldsAndColumns.put(f, idName);
+            } else if (otm != null) {
+                String name = f.getName().toLowerCase();
+                String idName = name + "_otm";
+                fieldsAndColumns.put(f, idName);
+            }
+        }
+        return fieldsAndColumns;
     }
 
     private long saveToDB(Map<String, String> columns, String table) throws SQLException {
@@ -102,7 +136,6 @@ public abstract class BaseDAO {
                     Map<String, String> columns = getColumns(obj);
                     String idName = otm.mappedBy() + "_id";
                     String sql = SqlCreator.createSQLforOTM(columns, tableName, id, idName);
-                    System.out.println(sql);
                     try {
                         connection.setAutoCommit(false);
                         PreparedStatement stm = connection.prepareStatement(sql);
@@ -151,67 +184,5 @@ public abstract class BaseDAO {
         }
 
         return columns;
-    }
-
-    protected List<String> getById(String table, long id, Map<Field, String> fieldsAndColumns) throws SQLException {
-        List<String> data = new ArrayList<>();
-
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Field, String> entry :
-                fieldsAndColumns.entrySet()) {
-            String value = entry.getValue();
-            sb.append(", ");
-            if (!value.endsWith("_mto")) {
-                sb.append(value);
-            }
-        }
-        sb.deleteCharAt(0);
-
-        String select = "select" + sb.toString() + " from " + table + " where id = ?";
-        PreparedStatement stm = connection.prepareStatement(select);
-        stm.setLong(1, id);
-        ResultSet result = stm.executeQuery();
-        result.next();
-        int columnsCount = fieldsAndColumns.size();
-        for (int i = 1; i <= columnsCount; i++) {
-            data.add(result.getString(i));
-        }
-
-        return data;
-    }
-
-    protected List<String> getByIdMTO(String table, long id, Map<Field, String> fieldsAndColumns) {
-        List<String> data = new ArrayList<>();
-
-        StringBuilder sb = new StringBuilder();
-        fieldsAndColumns.forEach((k, v) -> sb.append(", ")
-                .append(v));
-        sb.deleteCharAt(0);
-
-        String select = "select" + sb.toString() + " from " + table + " where id = ?";
-        return null;
-    }
-
-    protected Map<Field, String> getFieldsAndColumns(Field[] fields) {
-        Map<Field, String> fieldsAndColumns = new HashMap<>();
-        for (Field f :
-                fields) {
-            f.setAccessible(true);
-            Column column = f.getAnnotation(javax.persistence.Column.class);
-            OneToOne oto = f.getAnnotation(javax.persistence.OneToOne.class);
-            ManyToOne mto = f.getAnnotation(javax.persistence.ManyToOne.class);
-            if (column != null) {
-                fieldsAndColumns.put(f, column.name());
-            } else if (oto != null) {
-                String name = f.getName().toLowerCase();
-                String idName = name + "_id";
-                fieldsAndColumns.put(f, idName);
-            } else if (mto != null) {
-                String name = f.getName().toLowerCase();
-                String idName = name + "_mto";
-                fieldsAndColumns.put(f, idName);
-            }
-        }
-        return fieldsAndColumns;
     }
 }
