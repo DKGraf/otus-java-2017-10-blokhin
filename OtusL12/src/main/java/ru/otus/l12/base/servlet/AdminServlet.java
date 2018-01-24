@@ -2,7 +2,6 @@ package ru.otus.l12.base.servlet;
 
 import ru.otus.l12.base.monitoring.Monitoring;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,8 +22,8 @@ public class AdminServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         if (user.equals(ADMIN_LOGIN) && password.equals(ADMIN_PASSWORD)) {
-            response.addCookie(new Cookie("user", user));
-            response.addCookie(new Cookie("password", password));
+            request.getSession().setAttribute("user", user);
+            request.getSession().setAttribute("password", password);
             setResponseOK(response);
         } else {
             setResponseError(response);
@@ -32,17 +31,9 @@ public class AdminServlet extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String user = null;
-        String password = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cooky : cookies) {
-            if (cooky.getName().equals("user")) {
-                user = cooky.getValue();
-            }
-            if (cooky.getName().equals("password")) {
-                password = cooky.getValue();
-            }
-        }
+        String user = (String) request.getSession().getAttribute("user");
+        String password = (String) request.getSession().getAttribute("password");
+
         if (ADMIN_LOGIN.equals(user) && ADMIN_PASSWORD.equals(password)) {
             setResponseOK(response);
         } else {
