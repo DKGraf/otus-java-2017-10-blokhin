@@ -26,10 +26,8 @@ public class AdminServlet extends HttpServlet {
             response.addCookie(new Cookie("user", user));
             response.addCookie(new Cookie("password", password));
             setResponseOK(response);
-            response.setStatus(HttpServletResponse.SC_OK);
         } else {
             setResponseError(response);
-            response.setStatus(HttpServletResponse.SC_OK);
         }
     }
 
@@ -47,13 +45,15 @@ public class AdminServlet extends HttpServlet {
         }
         if (ADMIN_LOGIN.equals(user) && ADMIN_PASSWORD.equals(password)) {
             setResponseOK(response);
-            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            setResponseUnauthorized(response);
         }
     }
 
     private void setResponseError(HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().println(TemplateProcessor.instance().getPage("login.html"));
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 
     private void setResponseOK(HttpServletResponse response) throws IOException {
@@ -61,5 +61,12 @@ public class AdminServlet extends HttpServlet {
 
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().println(TemplateProcessor.instance().getPage("monitoring.html", pageVariables));
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    private void setResponseUnauthorized(HttpServletResponse response) throws IOException {
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().println(TemplateProcessor.instance().getPage("unauthorized.html"));
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
