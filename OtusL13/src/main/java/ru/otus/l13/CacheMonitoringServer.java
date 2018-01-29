@@ -21,28 +21,18 @@ public class CacheMonitoringServer {
 
     public void run() throws IOException {
         try (ServerSocket ss = new ServerSocket(PORT)) {
-
-        while (true) {
+            while (true) {
                 Socket client = ss.accept();
-
                 process(client);
-//                new Thread(() -> {
-//                    while (!client.isClosed()) {
-//                        try {
-//                            process(client);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }).start();
+                client.close();
             }
         }
     }
 
     private void process(Socket client) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-        for (String line = in.readLine(); line != null; line = in.readLine()) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+             PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
+            String line = in.readLine();
             if (line.equals(GET_STATE)) {
                 out.println(gson.toJson(monitoring.getCacheState()));
             }

@@ -7,10 +7,11 @@
     <groupId>ru.otus</groupId>
     <artifactId>OtusL13war</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
 
     <properties>
-        <maven.compiler.source>1.9</maven.compiler.source>
-        <maven.compiler.target>1.9</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -48,18 +49,18 @@
 
     <build>
         <finalName>OtusL13war</finalName>
-        <plugins>
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <webXml>src/main/resources/WEB-INF/web.xml</webXml>
-                    <webResources>
-                        <resource>
-                            <directory>public_html</directory>
-                        </resource>
-                    </webResources>
-                </configuration>
-            </plugin>
-        </plugins>
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<artifactId>maven-war-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<webXml>src/main/resources/WEB-INF/web.xml</webXml>-->
+                    <!--<webResources>-->
+                        <!--<resource>-->
+                            <!--<directory>public_html</directory>-->
+                        <!--</resource>-->
+                    <!--</webResources>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
     </build>
 </project>

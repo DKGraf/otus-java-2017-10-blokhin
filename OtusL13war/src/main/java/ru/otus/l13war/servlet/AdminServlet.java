@@ -52,6 +52,7 @@ public class AdminServlet extends HttpServlet {
     private void setResponseError(HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().println(ru.otus.l13war.servlet.TemplateProcessor.instance().getPage("login.html"));
+        response.getWriter().flush();
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 
@@ -60,12 +61,14 @@ public class AdminServlet extends HttpServlet {
         Map<String, Object> pageVariables = gson.fromJson(client.getCacheStateJSON(), HashMap.class);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().println(TemplateProcessor.instance().getPage("monitoring.html", pageVariables));
+        response.getWriter().flush();
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
     private void setResponseUnauthorized(HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().println(TemplateProcessor.instance().getPage("unauthorized.html"));
+        response.getWriter().flush();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
