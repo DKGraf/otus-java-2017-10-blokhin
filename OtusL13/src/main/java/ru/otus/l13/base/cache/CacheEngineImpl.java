@@ -1,4 +1,4 @@
-package ru.otus.l11.base.cache;
+package ru.otus.l13.base.cache;
 
 import java.util.Map;
 import java.util.Timer;
@@ -82,5 +82,21 @@ public class CacheEngineImpl<K, V> implements CacheEngine<K, V> {
 
     public synchronized int getCacheSize() {
         return elements.size();
+    }
+
+    public long getLifeTimeMs() {
+        return lifeTimeMs;
+    }
+
+    public int getMaxElements() {
+        return maxElements;
+    }
+
+    public int getHit() {
+        return hit;
+    }
+
+    public int getMiss() {
+        return miss;
     }
 }
