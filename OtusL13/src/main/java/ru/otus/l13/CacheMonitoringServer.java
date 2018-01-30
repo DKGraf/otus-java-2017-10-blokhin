@@ -33,7 +33,7 @@ public class CacheMonitoringServer {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
              PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
             String line = in.readLine();
-            if (line.equals(GET_STATE)) {
+            if (GET_STATE.equals(line)) {
                 out.println(gson.toJson(monitoring.getCacheState()));
             }
         }

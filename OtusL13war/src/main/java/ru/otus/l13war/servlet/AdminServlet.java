@@ -56,6 +56,7 @@ public class AdminServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 
+    @SuppressWarnings("unchecked")
     private void setResponseOK(HttpServletResponse response) throws IOException {
         Gson gson = new Gson();
         Map<String, Object> pageVariables = gson.fromJson(client.getCacheStateJSON(), HashMap.class);

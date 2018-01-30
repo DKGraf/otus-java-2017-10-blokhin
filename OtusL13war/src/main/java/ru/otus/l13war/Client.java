@@ -9,7 +9,6 @@ import java.net.Socket;
 public class Client {
     private final String host;
     private final int port;
-    private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
@@ -33,7 +32,7 @@ public class Client {
     }
 
     private void getConnection() throws IOException {
-        socket = new Socket(host, port);
+        Socket socket = new Socket(host, port);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
     }
