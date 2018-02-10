@@ -19,7 +19,7 @@ public class Client {
         this.port = port;
     }
 
-    public String getCacheStateJSON() throws IOException {
+    public String getCacheStateJSON() {
         getConnection();
         String state = "";
         try {
@@ -31,9 +31,13 @@ public class Client {
         return state;
     }
 
-    private void getConnection() throws IOException {
-        Socket socket = new Socket(host, port);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
+    private void getConnection() {
+        try {
+            Socket socket = new Socket(host, port);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

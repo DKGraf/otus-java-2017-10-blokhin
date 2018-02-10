@@ -51,7 +51,7 @@ public class AdminServlet extends HttpServlet {
 
     private void setResponseError(HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=utf-8");
-        response.getWriter().println(ru.otus.l13war.servlet.TemplateProcessor.instance().getPage("login.html"));
+        response.getWriter().println(ru.otus.l13war.servlet.TemplateProcessor.instance().getSimplePage("login.html"));
         response.getWriter().flush();
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
@@ -68,7 +68,7 @@ public class AdminServlet extends HttpServlet {
 
     private void setResponseUnauthorized(HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=utf-8");
-        response.getWriter().println(TemplateProcessor.instance().getPage("unauthorized.html"));
+        response.getWriter().println(TemplateProcessor.instance().getSimplePage("unauthorized.html"));
         response.getWriter().flush();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }

@@ -34,7 +34,7 @@ public class TemplateProcessor {
         }
     }
 
-    String getPage(String filename) throws IOException {
+    String getSimplePage(String filename) throws IOException {
             Template template = configuration.getTemplate(HTML_DIR + filename);
             return template.toString();
     }
