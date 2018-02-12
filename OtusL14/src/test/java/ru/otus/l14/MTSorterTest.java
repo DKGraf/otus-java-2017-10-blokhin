@@ -9,13 +9,15 @@ class MTSorterTest {
 
     @org.junit.jupiter.api.Test
     void sort() throws InterruptedException {
-        int size = 1000;
-        int[] array = new int[size];
+        int arraySize = 10000;
+        int numberThreads = 4;
+
+        int[] array = new int[arraySize];
         Random random = new Random();
         for (int i = 0; i < array.length; i++) {
             array[i] = random.nextInt();
         }
-        int[] sortedArray = MTSorter.sort(array);
+        int[] sortedArray = MTSorter.sort(array, numberThreads);
         Arrays.sort(array);
 
         Assertions.assertArrayEquals(array, sortedArray);

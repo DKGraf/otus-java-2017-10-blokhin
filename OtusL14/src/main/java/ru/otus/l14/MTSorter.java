@@ -1,39 +1,53 @@
 package ru.otus.l14;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class MTSorter {
 
     private MTSorter() {
     }
 
-    public static int[] sort(int[] array) throws InterruptedException {
+    public static int[] sort(int[] array, int threads) throws InterruptedException {
+        List<int[]> listOfSubarrays = createListOfSubarrays(array, threads);
+        startSorter(listOfSubarrays, threads);
+        return getResult(listOfSubarrays, threads);
+    }
+
+    private static List<int[]> createListOfSubarrays(int[] array, int threads) {
         int length = array.length;
-        int threadLength = length / 4;
-        int lastLength = length - threadLength * 3;
+        int threadLength = length / threads;
+        int lastLength = length - threadLength * (threads - 1);
 
-        int[] array1 = new int[threadLength];
-        int[] array2 = new int[threadLength];
-        int[] array3 = new int[threadLength];
-        int[] array4 = new int[lastLength];
+        final List<int[]> list = new ArrayList<>();
+        for (int i = 0; i < threads - 1; i++) {
+            list.add(new int[threadLength]);
+        }
+        list.add(new int[lastLength]);
 
-        System.arraycopy(array, 0, array1, 0, threadLength);
-        System.arraycopy(array, threadLength, array2, 0, threadLength);
-        System.arraycopy(array, threadLength * 2, array3, 0, threadLength);
-        System.arraycopy(array, threadLength * 3, array4, 0, lastLength);
+        for (int i = 0; i < threads; i++) {
+            System.arraycopy(array, (i * threadLength),list.get(i), 0, list.get(i).length);
+        }
 
-        SimpleSorter ss1 = new SimpleSorter(array1);
-        SimpleSorter ss2 = new SimpleSorter(array2);
-        SimpleSorter ss3 = new SimpleSorter(array3);
-        SimpleSorter ss4 = new SimpleSorter(array4);
-        ss1.start();
-        ss2.start();
-        ss3.start();
-        ss4.start();
-        ss1.join();
-        ss2.join();
-        ss3.join();
-        ss4.join();
+        return list;
+    }
 
-        return merge(merge(array1, array2), merge(array3, array4));
+    private static void startSorter(List<int[]> listOfSubarrays, int threads) throws InterruptedException {
+        for (int i = 0; i < threads; i++) {
+            int finalI = i;
+            Thread t = new Thread(() -> Arrays.sort(listOfSubarrays.get(finalI)));
+            t.start();
+            t.join();
+        }
+    }
+
+    private static int[] getResult(List<int[]> listOfSubarrays, int threads) {
+        int[] result = new int[0];
+        for (int i = 0; i < threads; i++) {
+            result = merge(result, listOfSubarrays.get(i));
+        }
+        return result;
     }
 
     private static int[] merge(int[] left, int[] right) {
