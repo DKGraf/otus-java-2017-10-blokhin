@@ -11,7 +11,9 @@ public class MTSorter {
 
     public static int[] sort(int[] array, int threads) throws InterruptedException {
         List<int[]> listOfSubarrays = createListOfSubarrays(array, threads);
-        startSorter(listOfSubarrays, threads);
+        List<Thread> listOfThreads = createListOfThreads(listOfSubarrays, threads);
+        startThreads(listOfThreads);
+        joinThreads(listOfThreads);
         return getResult(listOfSubarrays, threads);
     }
 
@@ -27,17 +29,31 @@ public class MTSorter {
         list.add(new int[lastLength]);
 
         for (int i = 0; i < threads; i++) {
-            System.arraycopy(array, (i * threadLength),list.get(i), 0, list.get(i).length);
+            System.arraycopy(array, (i * threadLength), list.get(i), 0, list.get(i).length);
         }
 
         return list;
     }
 
-    private static void startSorter(List<int[]> listOfSubarrays, int threads) throws InterruptedException {
+    private static List<Thread> createListOfThreads(List<int[]> listOfSubarrays, int threads) {
+        List<Thread> list = new ArrayList<>();
         for (int i = 0; i < threads; i++) {
             int finalI = i;
-            Thread t = new Thread(() -> Arrays.sort(listOfSubarrays.get(finalI)));
+            list.add(new Thread(() -> Arrays.sort(listOfSubarrays.get(finalI))));
+        }
+        return list;
+    }
+
+    private static void startThreads(List<Thread> listOfThreads) {
+        for (Thread t :
+                listOfThreads) {
             t.start();
+        }
+    }
+
+    private static void joinThreads(List<Thread> listOfThreads) throws InterruptedException {
+        for (Thread t :
+                listOfThreads) {
             t.join();
         }
     }
