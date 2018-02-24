@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Monitoring</title>
+    <script>
+        function postToServer() {
+            location.reload(true);
+        }
+    </script>
+</head>
+<body>
+<h1 align="center">Cache Monitoring</h1>
+<table border="5" frame="border" align="center">
+    <tr>
+        <th>Parameter</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+        <td>Elements in cache</td>
+        <td>${currentCacheSize}</td>
+    </tr>
+    <tr>
+        <td>Maximum cache size</td>
+        <td>${maxCacheSize}</td>
+    </tr>
+    <tr>
+        <td>Cache hit count</td>
+        <td>${cacheHitCount}</td>
+    </tr>
+    <tr>
+        <td>Cache miss count</td>
+        <td>${cacheMissCount}</td>
+    </tr>
+    <tr>
+        <td>Cache life time, ms</td>
+        <td>${lifeTime}</td>
+    </tr>
+</table>
+<div class="button" style="text-align: center;margin-top: 10px">
+    <button type="submit" id="sendButton" onClick="postToServer()">Update Info</button>
+</div>
+</body>
+</html>
