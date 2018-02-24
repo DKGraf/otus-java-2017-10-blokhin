@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 public class ActivityEmulator {
-    private final long EMULATION_DURATION = 120_000;
+    private final long EMULATION_DURATION = 300_000;
     private DBServiceHibernateImpl dbService;
 
     ActivityEmulator(DBServiceHibernateImpl dbService) {

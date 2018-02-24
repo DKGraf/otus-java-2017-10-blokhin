@@ -24,7 +24,6 @@ public class TemplateProcessor {
     }
 
     String getPage(String filename, Map<String, Object> data) throws IOException {
-        System.out.println(filename);
         try (Writer stream = new StringWriter()) {
             Template template = configuration.getTemplate(HTML_DIR + filename);
             template.process(data, stream);

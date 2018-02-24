@@ -51,11 +51,7 @@ public class AdminServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     private void setResponseOK(HttpServletResponse response) throws IOException {
         client.getSocket().sendMessage();
-        Map<String, Object> pageVariables = null;
-
-        while (pageVariables == null) {
-            pageVariables = client.getSocket().getPageVariables();
-        }
+        Map<String, Object> pageVariables = client.getSocket().getPageVariables();
 
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().println(TemplateProcessor.instance().getPage("monitoring.html", pageVariables));

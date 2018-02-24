@@ -2,6 +2,8 @@ package ru.otus.l15.ms;
 
 import ru.otus.l15.db.DBServiceMS;
 import ru.otus.l15.frontend.WebServer;
+import ru.otus.l15.ms.helpers.Messages;
+import ru.otus.l15.ms.helpers.Sender;
 import ru.otus.l15.ms.websocket.db.DBWSServer;
 import ru.otus.l15.ms.websocket.fe.FrontWSServer;
 
@@ -37,12 +39,10 @@ public class MessageSystem {
                         if (!frontToMSmessages.isEmpty()) {
                             String message = frontToMSmessages.poll();
                             Sender.senToDB(message);
-                            System.out.println("Msg to DB: " + message);
                         }
                         if (!dbToMSmessages.isEmpty()) {
                             String message = dbToMSmessages.poll();
                             Sender.senToFE(message);
-                            System.out.println("Msg to FE: " + message);
                         }
 
                         try {

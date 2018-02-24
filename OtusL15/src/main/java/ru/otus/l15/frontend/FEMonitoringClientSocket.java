@@ -20,6 +20,7 @@ public class FEMonitoringClientSocket {
     public void onConnect(Session session) {
         this.session = session;
         gson = new Gson();
+        sendMessage();
     }
 
     @OnWebSocketMessage
