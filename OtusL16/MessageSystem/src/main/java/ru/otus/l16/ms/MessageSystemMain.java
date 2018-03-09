@@ -11,7 +11,7 @@ package ru.otus.l16.ms;
  */
 public class MessageSystemMain {
     public static void main(String[] args) {
-        MessageSystem messageSystem = new MessageSystem();
+        MessageSystem messageSystem = new MessageSystem(2);
         messageSystem.start();
     }
 }

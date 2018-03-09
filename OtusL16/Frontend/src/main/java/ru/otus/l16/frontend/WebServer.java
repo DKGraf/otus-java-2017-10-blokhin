@@ -10,19 +10,20 @@ import ru.otus.l16.frontend.servlet.AdminServlet;
 
 public class WebServer {
     private final static String RESOURCES_LOCATION = "/web/";
+    private final static int PORT = 8090;
     private final Server server;
     private final FEtoMSSocket socket;
 
-    public WebServer(int port) {
+    WebServer(int index) {
         ResourceHandler resourceHandler = new ResourceHandler();
         Resource resource = Resource.newClassPathResource(RESOURCES_LOCATION);
         resourceHandler.setBaseResource(resource);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
-        socket = new FEtoMSSocket();
+        socket = new FEtoMSSocket(index);
         context.addServlet(new ServletHolder(new AdminServlet(socket)), "/admin");
 
-        server = new Server(port);
+        server = new Server(PORT + index);
         server.setHandler(new HandlerList(resourceHandler, context));
 
     }

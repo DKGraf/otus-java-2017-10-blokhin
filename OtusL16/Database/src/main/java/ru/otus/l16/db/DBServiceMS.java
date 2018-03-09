@@ -9,9 +9,9 @@ public class DBServiceMS {
     private DBServiceHibernateImpl dbService = new DBServiceHibernateImpl();
     private DBtoMSSocket socket;
 
-    public DBServiceMS() {
+    DBServiceMS(int index) {
         Monitoring monitoring = new Monitoring(dbService);
-        socket = new DBtoMSSocket(monitoring);
+        socket = new DBtoMSSocket(monitoring, index);
     }
 
     public void run() {

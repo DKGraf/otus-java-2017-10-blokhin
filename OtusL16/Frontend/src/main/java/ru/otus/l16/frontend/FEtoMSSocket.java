@@ -9,12 +9,14 @@ import java.net.Socket;
 public class FEtoMSSocket {
     private static final int DEFAULT_STEP_TIME = 10;
     private static final String HOST = "localhost";
-    private static final int PORT = 9998;
+    private static final int PORT = 9500;
     private PrintWriter out;
     private BufferedReader in;
     private final static String GET_STATE = "getState";
+    private final int index;
 
-    FEtoMSSocket() {
+    FEtoMSSocket(int index) {
+        this.index = index;
     }
 
     public String getCacheStateJSON() {
@@ -41,7 +43,7 @@ public class FEtoMSSocket {
 
     private void getConnection() {
         try {
-            Socket socket = new Socket(HOST, PORT);
+            Socket socket = new Socket(HOST, PORT + index);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {

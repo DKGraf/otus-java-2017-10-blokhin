@@ -7,21 +7,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class MStoDBSocket {
+public class MsToDbSocket {
     private static final int DEFAULT_STEP_TIME = 10;
     private static final String HOST = "localhost";
-    private static final int PORT = 9999;
+    private static final int PORT = 9000;
     private PrintWriter out;
     private BufferedReader in;
-    private final static AtomicInteger ID_GENERATOR = new AtomicInteger();
-    private final int id;
     private final static String GET_STATE = "getState";
+    private final int index;
 
-    public MStoDBSocket() {
-        id = ID_GENERATOR.getAndIncrement();
-        Messages.addDatabase(id);
+    public MsToDbSocket(int index) {
+        this.index = index;
     }
 
     public void getCacheStateJSON() {
@@ -42,7 +39,7 @@ public class MStoDBSocket {
                 }
             }
 
-            Messages.addDbToMSMessage(0, state);
+            Messages.addDbToMSMessage(index, state);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,7 +47,7 @@ public class MStoDBSocket {
 
     private void getConnection() {
         try {
-            Socket socket = new Socket(HOST, PORT);
+            Socket socket = new Socket(HOST, PORT + index);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {

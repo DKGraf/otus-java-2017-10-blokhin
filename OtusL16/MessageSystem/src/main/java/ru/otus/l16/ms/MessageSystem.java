@@ -1,96 +1,126 @@
 package ru.otus.l16.ms;
 
-import ru.otus.l16.ms.sockets.MStoDBSocket;
-import ru.otus.l16.ms.sockets.MStoFESocket;
+import ru.otus.l16.ms.sockets.MsToDbSocket;
+import ru.otus.l16.ms.sockets.MsToFeSocket;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MessageSystem {
     private static final int DEFAULT_STEP_TIME = 10;
-    private final MStoDBSocket msToDbSocket;
-    private final MStoFESocket msToFeSocket;
+    private final int count;
+    private final Map<Integer, MsToDbSocket> msToDbSocketList;
+    private final Map<Integer, MsToFeSocket> msToFeSocketList;
 
     private static final String DB_START_COMMAND = "java -jar ./Database/target/Database-1.0-SNAPSHOT.jar";
     private static final String FE_START_COMMAND = "java -jar ./Frontend/target/Frontend-1.0-SNAPSHOT.jar";
     private static final int START_DELAY = 3000;
 
-    public MessageSystem() {
-        msToDbSocket = new MStoDBSocket();
-        msToFeSocket = new MStoFESocket();
+    MessageSystem(int count) {
+        this.count = count;
+        msToDbSocketList = new HashMap<>();
+        msToFeSocketList = new HashMap<>();
     }
 
-    @SuppressWarnings("InfiniteLoopStatement")
     public void start() {
+        initLists();
         startDatabase();
         startSocket();
         startLoop();
         startFrontend();
     }
 
+    private void initLists() {
+        for (int i = 0; i < count; i++) {
+            msToDbSocketList.put(i, new MsToDbSocket(i));
+            Messages.addDatabase(i);
+            msToFeSocketList.put(i, new MsToFeSocket(i));
+            Messages.addFronend(i);
+        }
+    }
+
     private void startDatabase() {
-        try {
-            ProcessBuilder pb = new ProcessBuilder(DB_START_COMMAND.split(" "));
-//            pb.inheritIO();
-            pb.start();
+        for (int i = 0; i < count; i++) {
             try {
-                Thread.sleep(START_DELAY);
-            } catch (InterruptedException e) {
+                String command = DB_START_COMMAND + " " + i;
+                String[] pbCommand = command.split(" ");
+                ProcessBuilder pb = new ProcessBuilder(pbCommand);
+                pb.start();
+                System.out.println("Database service #" + i + " started.");
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-        } catch (IOException e) {
+        }
+        try {
+            Thread.sleep(START_DELAY);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private void startFrontend() {
-        try {
-            ProcessBuilder pb = new ProcessBuilder(FE_START_COMMAND.split(" "));
-//            pb.inheritIO();
-            pb.start();
+        for (int i = 0; i < count; i++) {
             try {
-                Thread.sleep(START_DELAY);
-            } catch (InterruptedException e) {
+                String command =  FE_START_COMMAND + " " + i;
+                String[] pbCommand = command.split(" ");
+                ProcessBuilder pb = new ProcessBuilder(pbCommand);
+                pb.start();
+                System.out.println("Frontend service #" + i + " started.");
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("All modules is started!");
-        } catch (IOException e) {
+        }
+        try {
+            Thread.sleep(START_DELAY);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        System.out.println("All modules is started!");
     }
 
     private void startSocket() {
-        new Thread(
-                () -> {
-                    try {
-                        msToFeSocket.run();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-        ).start();
-    }
-
-    private void startLoop() {
-        new Thread(
-                () -> {
-                    while (true) {
-                        String feToMSMessage = Messages.getFeToMsMessage(0);
-                        String dbToMSMessage = Messages.getDbToMsMessage(0);
-
-                        if (feToMSMessage != null) {
-                            msToDbSocket.getCacheStateJSON();
-                        }
-                        if (dbToMSMessage != null) {
-                            Messages.addMsToFeMessage(0, dbToMSMessage);
-                        }
-
+        for (int i = 0; i < count; i++) {
+            int finalI = i;
+            new Thread(
+                    () -> {
                         try {
-                            Thread.sleep(DEFAULT_STEP_TIME);
-                        } catch (InterruptedException e) {
+                            msToFeSocketList.get(finalI).run();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
-                }
-        ).start();
+            ).start();
+        }
+
+    }
+
+    @SuppressWarnings("InfiniteLoopStatement")
+    private void startLoop() {
+        for (int i = 0; i < count; i++) {
+            int finalI = i;
+            new Thread(
+                    () -> {
+                        while (true) {
+                            String feToMSMessage = Messages.getFeToMsMessage(finalI);
+                            String dbToMSMessage = Messages.getDbToMsMessage(finalI);
+
+                            if (feToMSMessage != null) {
+                                msToDbSocketList.get(finalI).getCacheStateJSON();
+                            }
+                            if (dbToMSMessage != null) {
+                                Messages.addMsToFeMessage(finalI, dbToMSMessage);
+                            }
+
+                            try {
+                                Thread.sleep(DEFAULT_STEP_TIME);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+            ).start();
+            System.out.println("Loop #" + i + " started.");
+        }
     }
 }

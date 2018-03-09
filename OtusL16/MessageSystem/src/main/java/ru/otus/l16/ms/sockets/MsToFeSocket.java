@@ -8,22 +8,20 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class MStoFESocket {
+public class MsToFeSocket {
     private static final int DEFAULT_STEP_TIME = 10;
-    private final static int PORT = 9998;
+    private final static int PORT = 9500;
     private final static String GET_STATE = "getState";
-    private final static AtomicInteger ID_GENERATOR = new AtomicInteger();
-    private final int id;
+    private final int index;
 
-    public MStoFESocket() {
-        id = ID_GENERATOR.getAndIncrement();
-        Messages.addFronend(id);
+    public MsToFeSocket(int index) {
+        this.index = index;
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     public void run() throws IOException {
-        try (ServerSocket ss = new ServerSocket(PORT)) {
+        try (ServerSocket ss = new ServerSocket(PORT + index)) {
             while (true) {
                 Socket client = ss.accept();
                 process(client);
@@ -37,10 +35,10 @@ public class MStoFESocket {
              PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
             String message = in.readLine();
             if (GET_STATE.equals(message)) {
-                Messages.addFeToMsMessage(0, message);
+                Messages.addFeToMsMessage(index, message);
 
                 while (true) {
-                    String cacheState = Messages.getMsToFeMessage(0);
+                    String cacheState = Messages.getMsToFeMessage(index);
                     if (cacheState != null) {
                         out.println(cacheState);
                         break;

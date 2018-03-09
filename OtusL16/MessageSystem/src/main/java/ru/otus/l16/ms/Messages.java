@@ -7,7 +7,6 @@ public class Messages {
     private static final ConcurrentHashMap<Integer, ConcurrentLinkedQueue<String>> feToMsMessages = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<Integer, ConcurrentLinkedQueue<String>> dbToMsMessages = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<Integer, ConcurrentLinkedQueue<String>> msToFeMessages = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Integer, ConcurrentLinkedQueue<String>> msToDbMessages = new ConcurrentHashMap<>();
 
     private Messages() {
     }
@@ -19,7 +18,6 @@ public class Messages {
 
     public static void addDatabase(Integer id) {
         dbToMsMessages.put(id, new ConcurrentLinkedQueue<>());
-        msToDbMessages.put(id, new ConcurrentLinkedQueue<>());
     }
 
     public static void addFeToMsMessage(Integer id, String message) {
@@ -34,10 +32,6 @@ public class Messages {
         msToFeMessages.get(id).add(message);
     }
 
-    public static void addMsToDbMessage(Integer id, String message) {
-        msToDbMessages.get(id).add(message);
-    }
-
     public static String getFeToMsMessage(Integer id) {
         return feToMsMessages.get(id).poll();
     }
@@ -48,9 +42,5 @@ public class Messages {
 
     public static String getMsToFeMessage(Integer id) {
         return msToFeMessages.get(id).poll();
-    }
-
-    public static String getMsToDbMessage(Integer id) {
-        return msToDbMessages.get(id).poll();
     }
 }
