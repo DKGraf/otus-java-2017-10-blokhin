@@ -9,23 +9,20 @@ import org.eclipse.jetty.util.resource.Resource;
 import ru.otus.l16.frontend.servlet.AdminServlet;
 
 public class WebServer {
-    private final static int PORT = 8090;
     private final static String RESOURCES_LOCATION = "/web/";
     private final Server server;
     private final FEtoMSSocket socket;
-//    private FEMonitoringClient monitoringClient;
 
-    public WebServer() {
+    public WebServer(int port) {
         ResourceHandler resourceHandler = new ResourceHandler();
         Resource resource = Resource.newClassPathResource(RESOURCES_LOCATION);
         resourceHandler.setBaseResource(resource);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
         socket = new FEtoMSSocket();
-//        monitoringClient = new FEMonitoringClient();
         context.addServlet(new ServletHolder(new AdminServlet(socket)), "/admin");
 
-        server = new Server(PORT);
+        server = new Server(port);
         server.setHandler(new HandlerList(resourceHandler, context));
 
     }
@@ -33,7 +30,6 @@ public class WebServer {
     public void run() {
         try {
             server.start();
-//            monitoringClient.start();
         } catch (Exception e) {
             e.printStackTrace();
         }

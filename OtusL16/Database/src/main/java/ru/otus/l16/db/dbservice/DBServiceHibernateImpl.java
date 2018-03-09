@@ -33,7 +33,7 @@ public class DBServiceHibernateImpl implements DBService {
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
         sessionFactory = createSessionFactory(configuration);
-        cache = new CacheEngineImpl(50, 3_000);
+        cache = new CacheEngineImpl(50, 1_500);
     }
 
     private static SessionFactory createSessionFactory(Configuration configuration) {

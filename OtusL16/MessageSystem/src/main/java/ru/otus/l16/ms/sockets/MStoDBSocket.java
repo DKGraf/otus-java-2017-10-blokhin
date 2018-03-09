@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MStoDBSocket {
+    private static final int DEFAULT_STEP_TIME = 10;
     private static final String HOST = "localhost";
     private static final int PORT = 9999;
     private PrintWriter out;
@@ -35,7 +36,7 @@ public class MStoDBSocket {
                     break;
                 }
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(DEFAULT_STEP_TIME);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

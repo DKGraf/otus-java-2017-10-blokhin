@@ -1,6 +1,4 @@
-package ru.otus.l16;
-
-import ru.otus.l16.ms.MessageSystem;
+package ru.otus.l16.ms;
 
 /**
  * MessageSystem инициализирует и запускает все остальные службы,
@@ -11,7 +9,7 @@ import ru.otus.l16.ms.MessageSystem;
  * сервиса. В прошлых версиях происходило автообновление страницы раз в секунду,
  * теперь для этих целей служит соответствующая кнопка.
  */
-public class Main {
+public class MessageSystemMain {
     public static void main(String[] args) {
         MessageSystem messageSystem = new MessageSystem();
         messageSystem.start();
