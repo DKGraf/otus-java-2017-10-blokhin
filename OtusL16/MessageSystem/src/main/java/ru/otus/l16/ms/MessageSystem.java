@@ -15,7 +15,7 @@ public class MessageSystem {
 
     private static final String DB_START_COMMAND = "java -jar ./Database/target/Database-1.0-SNAPSHOT.jar";
     private static final String FE_START_COMMAND = "java -jar ./Frontend/target/Frontend-1.0-SNAPSHOT.jar";
-    private static final int START_DELAY = 3000;
+    private static final int START_DELAY = 5000;
 
     MessageSystem(int count) {
         this.count = count;
@@ -47,34 +47,36 @@ public class MessageSystem {
                 String[] pbCommand = command.split(" ");
                 ProcessBuilder pb = new ProcessBuilder(pbCommand);
                 pb.start();
-                System.out.println("Database service #" + i + " started.");
+                try {
+                    Thread.sleep(START_DELAY);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Database service #" + i + " started. Cache parameters: " +
+                        "elements size - " + (50 * (i + 1)) + ", lifetime - " + (1500 * (i + 1)) + " ms.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        try {
-            Thread.sleep(START_DELAY);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
     }
 
     private void startFrontend() {
         for (int i = 0; i < count; i++) {
             try {
-                String command =  FE_START_COMMAND + " " + i;
+                String command = FE_START_COMMAND + " " + i;
                 String[] pbCommand = command.split(" ");
                 ProcessBuilder pb = new ProcessBuilder(pbCommand);
                 pb.start();
-                System.out.println("Frontend service #" + i + " started.");
+                try {
+                    Thread.sleep(START_DELAY);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Frontend service #" + i + " started on localhost:" + (8090 + i) + ".");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        try {
-            Thread.sleep(START_DELAY);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
         System.out.println("All modules is started!");
     }

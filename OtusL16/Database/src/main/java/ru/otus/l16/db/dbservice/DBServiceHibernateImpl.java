@@ -17,7 +17,7 @@ public class DBServiceHibernateImpl implements DBService {
     private final CacheEngine<Long, UserDataSet> cache;
 
     @SuppressWarnings("unchecked")
-    public DBServiceHibernateImpl() {
+    public DBServiceHibernateImpl(int multiplier) {
         Configuration configuration = new Configuration();
 
         configuration.addAnnotatedClass(UserDataSet.class);
@@ -33,7 +33,7 @@ public class DBServiceHibernateImpl implements DBService {
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
         sessionFactory = createSessionFactory(configuration);
-        cache = new CacheEngineImpl(50, 1_500);
+        cache = new CacheEngineImpl(50 * (multiplier + 1), 1_500 * (multiplier + 1));
     }
 
     private static SessionFactory createSessionFactory(Configuration configuration) {
